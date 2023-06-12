@@ -20,10 +20,14 @@ ic.configureOutput(includeContext=True)
 
 
 @timer('pressHold', Settings.pressHoldTime, 'pressHold')
-@timer('releaseDeadLine', Settings.pressHoldTime, 'clickCancel')
-@timer('singleClickLockout', Settings.pressHoldTime, 'singleClickReady')
-@timer('doubleClickLockout', Settings.pressHoldTime, 'doubleClickReady')
-@timer('releaseClickDelay', Settings.pressHoldTime, 'singleClick')
+@timer('releaseDeadLine', Settings.releaseDeadLineTime, 'clickCancel')
+@timer('singleClickLockout',
+       Settings.singleClickLockoutTime,
+       'singleClickReady')
+@timer('doubleClickLockout',
+       Settings.doubleClickLockoutTime,
+       'doubleClickReady')
+@timer('releaseClickDelay', Settings.releaseClickDelayTime, 'singleClick')
 class MouseButton(CoreWidget):
   """MouseButton instances allow each button on a mouse to operate entirely
   independently.

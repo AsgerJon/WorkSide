@@ -12,15 +12,17 @@ from icecream import ic
 
 from workside.settings import flag, Settings
 from workside.styles import lightSquareStyle, darkSquareStyle, labelStyle
-from workside.widgets import CoreWidget, MouseButton
+from workside.widgets import CoreWidget, MouseButton, buttonFactory
 
 ic.configureOutput(includeContext=True)
 
 
+@buttonFactory(Qt.MouseButton.LeftButton)
+@buttonFactory(Qt.MouseButton.RightButton)
+@buttonFactory(Qt.MouseButton.MiddleButton)
+@buttonFactory(Qt.MouseButton.BackButton)
+@buttonFactory(Qt.MouseButton.ForwardButton)
 @flag('hover')
-@flag('pressed')
-@flag('enabled')
-@flag('activated')
 @flag('moving')
 class AbstractButton(CoreWidget):
   """AbstractButton is a class providing fundamental functionality
@@ -45,11 +47,11 @@ class AbstractButton(CoreWidget):
     )
     self.setSizePolicy(_policy)
     self._movingDelayTimer = None
-    self._leftButton = None
-    self._rightButton = None
-    self._middleButton = None
-    self._forwardButton = None
-    self._backButton = None
+    # self._leftButton = None
+    # self._rightButton = None
+    # self._middleButton = None
+    # self._forwardButton = None
+    # self._backButton = None
     self.leftPressHold.connect(lambda: print('left press hold'))
     self.leftClick.connect(lambda: print('left single click'))
     self.leftDoubleClick.connect(lambda: print('left double click'))
@@ -57,37 +59,38 @@ class AbstractButton(CoreWidget):
     self.rightClick.connect(lambda: print('right single click'))
     self.rightDoubleClick.connect(lambda: print('right double click'))
 
-  def _createLeftButton(self) -> NoReturn:
-    """Creator function for left button"""
-    self._leftButton = MouseButton(self, btn=Qt.MouseButton.LeftButton)
-    self._leftButton.pressHold.connect(self.leftPressHold.emit)
-    self._leftButton.singleClick.connect(self.leftClick.emit)
-    self._leftButton.doubleClick.connect(self.leftDoubleClick.emit)
-
-  def _getLeftButton(self) -> MouseButton:
-    """Getter-function for the left mouse button"""
-    if self._leftButton is None:
-      self._createLeftButton()
-      return self._getLeftButton()
-    if isinstance(self._leftButton, MouseButton):
-      return self._leftButton
-    raise TypeError
-
-  def _createRightButton(self) -> NoReturn:
-    """Creator function for right mouse button"""
-    self._rightButton = MouseButton(self, btn=Qt.MouseButton.RightButton)
-    self._rightButton.pressHold.connect(self.rightPressHold.emit)
-    self._rightButton.singleClick.connect(self.rightClick.emit)
-    self._rightButton.doubleClick.connect(self.rightDoubleClick.emit)
-
-  def _getRightButton(self) -> MouseButton:
-    """Getter-function for the right mouse button"""
-    if self._rightButton is None:
-      self._createRightButton()
-      return self._getRightButton()
-    if isinstance(self._rightButton, MouseButton):
-      return self._rightButton
-    raise TypeError
+  #
+  # def _createLeftButton(self) -> NoReturn:
+  #   """Creator function for left button"""
+  #   self._leftButton = MouseButton(self, btn=Qt.MouseButton.LeftButton)
+  #   self._leftButton.pressHold.connect(self.leftPressHold.emit)
+  #   self._leftButton.singleClick.connect(self.leftClick.emit)
+  #   self._leftButton.doubleClick.connect(self.leftDoubleClick.emit)
+  #
+  # def _getLeftButton(self) -> MouseButton:
+  #   """Getter-function for the left mouse button"""
+  #   if self._leftButton is None:
+  #     self._createLeftButton()
+  #     return self._getLeftButton()
+  #   if isinstance(self._leftButton, MouseButton):
+  #     return self._leftButton
+  #   raise TypeError
+  #
+  # def _createRightButton(self) -> NoReturn:
+  #   """Creator function for right mouse button"""
+  #   self._rightButton = MouseButton(self, btn=Qt.MouseButton.RightButton)
+  #   self._rightButton.pressHold.connect(self.rightPressHold.emit)
+  #   self._rightButton.singleClick.connect(self.rightClick.emit)
+  #   self._rightButton.doubleClick.connect(self.rightDoubleClick.emit)
+  #
+  # def _getRightButton(self) -> MouseButton:
+  #   """Getter-function for the right mouse button"""
+  #   if self._rightButton is None:
+  #     self._createRightButton()
+  #     return self._getRightButton()
+  #   if isinstance(self._rightButton, MouseButton):
+  #     return self._rightButton
+  #   raise TypeError
 
   def _createMovingDelayTimer(self) -> NoReturn:
     """Creator function for the moving delay. """
