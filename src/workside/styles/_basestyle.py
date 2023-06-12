@@ -8,9 +8,11 @@ from typing import NoReturn, TYPE_CHECKING
 from PySide6.QtCore import Qt, QRect
 from PySide6.QtGui import QBrush, QFont, QPen, QColor, QPainter
 from icecream import ic
+from worktoy.core import maybe
 from worktoy.typetools import TypeBag
 from worktoy.waitaminute import ProceduralError
 
+from workside.settings import Settings
 from workside.styles import Family
 
 if TYPE_CHECKING:
@@ -35,13 +37,20 @@ class BaseStyle:
     fontSize=12,
   )
 
-  def __init__(self, name: str, data: dict) -> None:
+  def __init__(self, name: str, data: dict = None) -> None:
+    data = maybe(data, {})
+    if not isinstance(data, dict):
+      raise TypeError
     self._viewPort = None
     self._name = name
     self._data = data | BaseStyle._baseValues
     self._data = {}
     for (key, val) in BaseStyle._baseValues.items():
       self._data |= {key: data.get(key, val)}
+
+  def getData(self) -> dict:
+    """Getter-function for data"""
+    return self._data
 
   def getViewPort(self) -> QRect:
     """Getter-function for viewport"""
@@ -59,8 +68,8 @@ class BaseStyle:
     weight = self._data.get('fontWeight')
     font.setWeight(weight)
     viewSize = min(self.getViewPort().width(), self.getViewPort().height())
-    fontSize = int(self._data.get('fontSize') * viewSize / 400)
-    font.setPointSize(fontSize)
+    fontSize = self._data.get('fontSize')
+    font.setPointSize(max(fontSize, Settings.minimumFontSize))
     return font
 
   def getBrush(self) -> QBrush:
@@ -86,10 +95,7 @@ class BaseStyle:
       other.setFont(self.getFont())
       other.setBrush(self.getBrush())
       return other
-
-    if isinstance(other, CoreWidget):
-      other.setStyle(self)
-      return other
+    return NotImplemented
 
   def __str__(self) -> str:
     """String representation"""

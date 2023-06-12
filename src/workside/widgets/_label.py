@@ -8,13 +8,14 @@ from typing import NoReturn, Never
 
 from PySide6.QtCore import Qt, QRectF
 from PySide6.QtGui import QPaintEvent, QPainter, QFontMetrics, QFont
+from PySide6.QtWidgets import QSizePolicy
 from icecream import ic
 from worktoy.core import maybe
 from worktoy.waitaminute import ReadOnlyError
 
-from workside.styles import labelStyle, BaseStyle, Family
+from workside.styles import labelStyle, BaseStyle, Family, headerStyle
 from workside.widgets import CoreWidget
-from workside.settings import ShapeSettings
+from workside.settings import Settings
 from random import choices
 
 ic.configureOutput(includeContext=True)
@@ -30,7 +31,7 @@ class Label(CoreWidget):
   @classmethod
   def _getMaxLength(cls) -> int:
     """Getter-function for the width in number of characters."""
-    out = maybe(cls._maxLength, ShapeSettings.headerLabelWidth)
+    out = maybe(cls._maxLength, Settings.headerLabelWidth)
     if isinstance(out, int):
       return out
     raise TypeError
@@ -41,6 +42,12 @@ class Label(CoreWidget):
     self._styleSettings = None
     self._fontMetrics = None
     self._font = None
+    _policy = self.createSizePolicy(
+      vertical=QSizePolicy.Policy.Maximum,
+      horizontal=QSizePolicy.Policy.Maximum,
+    )
+    self.setSizePolicy(_policy)
+    self.setStyle(headerStyle)
 
   def setFont(self, font: QFont) -> NoReturn:
     """Setter-function for the font"""
@@ -50,10 +57,7 @@ class Label(CoreWidget):
   def _createFont(self, font: QFont = None) -> NoReturn:
     """Creator-function for font"""
     if font is None:
-      _font = QFont()
-      _font.setFamily(Family.modern)
-      _font.setPointSize(16)
-      self._font = _font
+      self._font = Family.modern.asQFont()
     elif isinstance(font, QFont):
       self._font = font
     else:
@@ -61,16 +65,19 @@ class Label(CoreWidget):
 
   def _getFont(self) -> QFont:
     """Getter-function for the font"""
-    if self._font is None:
-      self._createFont()
+    if self._style is None:
+      self._createStyle()
       return self._getFont()
-    if isinstance(self._font, QFont):
-      return self._font
-    raise TypeError
+    font = self.getStyle().getFont()
+    self._createFontMetrics(font)
+    return font
 
-  def _createFontMetrics(self) -> NoReturn:
+  def _createFontMetrics(self, font: QFont = None) -> NoReturn:
     """Creator-function for the font metrics"""
-    self._fontMetrics = QFontMetrics(self._getFont())
+    if font is None:
+      font = self._getFont()
+    if isinstance(font, QFont):
+      self._fontMetrics = QFontMetrics(font)
 
   def _getFontMetrics(self, ) -> QFontMetrics:
     """Getter-function for the font metrics"""
@@ -90,29 +97,20 @@ class Label(CoreWidget):
       return self._getFontMetrics().boundingRect(text).toRectF()
     raise TypeError
 
-  def _delStyleSettings(self, ) -> Never:
-    """Illegal deleter function"""
-    raise ReadOnlyError('styleSettings')
+  def setStyle(self, style: BaseStyle) -> NoReturn:
+    """Reimplementation of the style setter such as to create the font
+    metrics immediately"""
+    style.setViewPort(self.getViewPortF())
+    font = style.getFont()
+    self._createFontMetrics(font)
+    CoreWidget.setStyle(self, style)
 
-  def _setStyleSettings(self, settings: BaseStyle = None) -> NoReturn:
-    """Setter-function for the style settings applied to this label"""
-    if settings is None:
-      return
-    self._styleSettings = settings
-
-  def _getStyleSettings(self) -> BaseStyle:
-    """Getter-function for the style settings applied to this label"""
-    if self._styleSettings is None:
-      self._styleSettings = labelStyle
-      return self._getStyleSettings()
-    if isinstance(self._styleSettings, BaseStyle):
-      return self._styleSettings
-    raise TypeError
-
-  def _setText(self, text: str) -> NoReturn:
+  def setText(self, text: str) -> NoReturn:
     """Setter-function for the text"""
     for word in text.split(' '):
       self._getWords().append(word)
+    self.setMinimumSize(self._getBoundingRect(text).size().toSize())
+    self.update()
 
   def getText(self, ) -> str:
     """Getter-function for the text"""

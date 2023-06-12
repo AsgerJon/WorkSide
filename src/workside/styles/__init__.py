@@ -7,6 +7,7 @@ from icecream import ic
 
 ic.configureOutput(includeContext=True)
 
-from ._basestyle import BaseStyle
 from ._fontfamily import Family
+from ._basestyle import BaseStyle
 from ._styleinstances import backgroundStyle, labelStyle, headerStyle
+from ._styleinstances import debugStyle, lightSquareStyle, darkSquareStyle

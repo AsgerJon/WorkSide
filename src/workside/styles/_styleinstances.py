@@ -7,7 +7,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QFont
 from icecream import ic
 
-from workside.settings import BaseStyle, Family
+from workside.styles import BaseStyle, Family
 
 ic.configureOutput(includeContext=True)
 _baseData = dict(
@@ -106,16 +106,16 @@ _labelData = dict(
 _headerData = dict(
   fillColor=QColor(0, 0, 0, 0, ),
   fillStyle=Qt.BrushStyle.NoBrush,
-  lineColor=QColor(255, 0, 0, 255),
+  lineColor=QColor(0, 0, 91, 255),
   lineStyle=Qt.PenStyle.SolidLine,
   lineWidth=1,
   fontFamily=Family.modern,
   fontWeight=QFont.Weight.Bold,
-  fontSize=16,
+  fontSize=32,
 )
 _debugData = dict(
-  fillColor=QColor(0, 0, 0, 0, ),
-  fillStyle=Qt.BrushStyle.NoBrush,
+  fillColor=QColor(223, 255, 223, 255, ),
+  fillStyle=Qt.BrushStyle.SolidPattern,
   lineColor=QColor(255, 0, 0, 255),
   lineStyle=Qt.PenStyle.SolidLine,
   lineWidth=1,

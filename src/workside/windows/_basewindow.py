@@ -25,6 +25,7 @@ class BaseWindow(QMainWindow):
 
   def __init__(self, parent: QWidget = None) -> None:
     QMainWindow.__init__(self, parent)
+    self.setMouseTracking(True)
     statusBar = QLabel()
     policy = QSizePolicy()
     policy.setVerticalPolicy(QSizePolicy.Policy.Maximum)

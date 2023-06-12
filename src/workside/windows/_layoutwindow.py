@@ -9,9 +9,11 @@ from typing import NoReturn
 from PySide6.QtGui import QKeyEvent, QTextCursor
 from PySide6.QtWidgets import QVBoxLayout, QGridLayout, QHBoxLayout
 from PySide6.QtWidgets import QWidget
+from icecream import ic
 from worktoy.core import maybe
 
-from workside.widgets import CoreWidget
+from workside.widgets import CoreWidget, Spacer, VSpacer, HSpacer, \
+  AbstractButton, DoubleSpacer
 from workside.widgets import Label
 from workside.windows import BaseWindow
 from workside.styles import headerStyle
@@ -20,6 +22,8 @@ wordStart = QTextCursor.MoveOperation.StartOfWord
 wordEnd = QTextCursor.MoveOperation.EndOfWord
 move = QTextCursor.MoveMode.MoveAnchor
 mark = QTextCursor.MoveMode.KeepAnchor
+
+ic.configureOutput(includeContext=True)
 
 
 class LayoutWindow(BaseWindow):
@@ -33,24 +37,27 @@ class LayoutWindow(BaseWindow):
 
   def __init__(self, parent: QWidget = None) -> None:
     BaseWindow.__init__(self, parent)
-    self._logWidget = None
     self._baseHeaderWidget = None
+    self._button = None
     self._baseWidget = None
     self._fileLabel = None
     self._centralWidget = None
     self._baseGridLayout = None
     self._baseVerticalBoxLayout = None
     self._baseHorizontalBoxLayout = None
+    self._horizontalSpacers = []
+    self._verticalSpacers = []
+    self._doubleSpacers = []
 
   def _createBaseVerticalLayout(self) -> NoReturn:
     """Creator-function for the vertical base layout"""
     self._baseVerticalBoxLayout = QVBoxLayout()
 
-  def getBaseVerticalBoxLayout(self) -> QVBoxLayout:
+  def _getBaseVerticalBoxLayout(self) -> QVBoxLayout:
     """Getter-function for the vertical base layout"""
     if self._baseVerticalBoxLayout is None:
       self._createBaseVerticalLayout()
-      return self.getBaseVerticalBoxLayout()
+      return self._getBaseVerticalBoxLayout()
     if isinstance(self._baseVerticalBoxLayout, QVBoxLayout):
       return self._baseVerticalBoxLayout
     raise TypeError
@@ -59,11 +66,11 @@ class LayoutWindow(BaseWindow):
     """Creator function for the horizontal layout"""
     self._baseHorizontalBoxLayout = QHBoxLayout()
 
-  def getBaseHorizontalBoxLayout(self) -> QHBoxLayout:
+  def _getBaseHorizontalBoxLayout(self) -> QHBoxLayout:
     """Getter function for the horizontal layout"""
     if self._baseHorizontalBoxLayout is None:
       self._createHorizontalBoxLayout()
-      return self.getBaseHorizontalBoxLayout()
+      return self._getBaseHorizontalBoxLayout()
     if isinstance(self._baseHorizontalBoxLayout, QHBoxLayout):
       return self._baseHorizontalBoxLayout
     raise TypeError
@@ -72,11 +79,11 @@ class LayoutWindow(BaseWindow):
     """Creator-function for the base layout"""
     self._baseGridLayout = QGridLayout()
 
-  def getBaseLayout(self) -> QGridLayout:
+  def _getBaseLayout(self) -> QGridLayout:
     """Getter-function for the base layout"""
     if self._baseGridLayout is None:
       self._createBaseLayout()
-      return self.getBaseLayout()
+      return self._getBaseLayout()
     if isinstance(self._baseGridLayout, QGridLayout):
       return self._baseGridLayout
 
@@ -84,6 +91,7 @@ class LayoutWindow(BaseWindow):
     """Creator-function for the header widget"""
     self._baseHeaderWidget = Label()
     headerStyle @ self._baseHeaderWidget
+    self._baseHeaderWidget.setText('Welcome!')
 
   def _getBaseHeaderWidget(self) -> CoreWidget:
     """Getter-function for the header widget"""
@@ -91,32 +99,83 @@ class LayoutWindow(BaseWindow):
       self._createBaseHeaderWidget()
       return self._getBaseHeaderWidget()
     if isinstance(self._baseHeaderWidget, CoreWidget):
+      print(self._baseHeaderWidget.getText())
       return self._baseHeaderWidget
+    raise TypeError
+
+  def _createButton(self) -> NoReturn:
+    """Creator-function for the button"""
+    self._button = AbstractButton()
+
+  def _getButton(self) -> AbstractButton:
+    """Getter-function for the button"""
+    if self._button is None:
+      self._createButton()
+      return self._getButton()
+    if isinstance(self._button, AbstractButton):
+      return self._button
+    raise TypeError
 
   def _createBaseWidget(self) -> NoReturn:
     """Creator-function for the base widget"""
     self._baseWidget = CoreWidget()
 
-  def getBaseWidget(self) -> CoreWidget:
+  def _getBaseWidget(self) -> CoreWidget:
     """Getter-function for the base widget"""
     if self._baseWidget is None:
       self._createBaseWidget()
-      return self.getBaseWidget()
+      return self._getBaseWidget()
     if isinstance(self._baseWidget, CoreWidget):
       return self._baseWidget
 
-  @abstractmethod
+  def _getVSpacerList(self) -> list[VSpacer]:
+    """Getter-function for the list of vertical spacers"""
+    return self._verticalSpacers
+
+  def _getVSpacer(self) -> VSpacer:
+    """Getter-function for the vertical spacer"""
+    spacer = VSpacer()
+    self._getVSpacerList().append(spacer)
+    return spacer
+
+  def _getHSpacerList(self) -> list[HSpacer]:
+    """Getter-function for the list of horizontal spacers"""
+    return self._horizontalSpacers
+
+  def _getHSpacer(self) -> HSpacer:
+    """Getter function for horizontal spacers"""
+    spacer = HSpacer()
+    self._getHSpacerList().append(spacer)
+    return spacer
+
+  def _getDoubleSpacerList(self) -> list[DoubleSpacer]:
+    """Getter-function for list of double spacers"""
+    return self._doubleSpacers
+
+  def _getDoubleSpacer(self) -> DoubleSpacer:
+    """Getter-function for double spacer"""
+    spacer = DoubleSpacer()
+    self._getDoubleSpacerList().append(spacer)
+    return spacer
+
   def setupWidgets(self) -> NoReturn:
     """Sets up the widgets"""
+    self._getBaseLayout().addWidget(self._getBaseHeaderWidget(), 0, 0, )
+    self._getBaseLayout().addWidget(self._getVSpacer(), 1, 0, )
+    self._getBaseLayout().addWidget(self._getHSpacer(), 0, 1, )
+    self._getBaseLayout().addWidget(self._getVSpacer(), 2, 0, )
+    self._getBaseLayout().addWidget(self._getHSpacer(), 0, 2, )
+    self._getBaseLayout().addWidget(self._getVSpacer(), 2, 1, )
+    self._getBaseLayout().addWidget(self._getHSpacer(), 1, 2, )
+    self._getBaseLayout().addWidget(self._getDoubleSpacer(), 1, 1, )
+    self._getBaseLayout().addWidget(self._getButton(), 2, 2, )
+    self._getBaseWidget().setLayout(self._getBaseLayout())
+    self.setCentralWidget(self._getBaseWidget())
 
   def show(self) -> NoReturn:
     """Sets up the widgets before invoking the show super call"""
+    self.setupWidgets()
     BaseWindow.show(self)
-
-  def tellMe(self, msg: str) -> NoReturn:
-    """Transmits the message to the log widget"""
-    if maybe(msg):
-      self._logWidget.tellMe(msg)
 
   def keyReleaseEvent(self, event: QKeyEvent) -> NoReturn:
     """Triggers spell checking"""
