@@ -2,8 +2,8 @@
 #  Copyright (c) 2023 Asger Jon Vistisen
 #  MIT Licence
 from __future__ import annotations
-
 from icecream import ic
+from worktoy.waitaminute import n00bError
 
 ic.configureOutput(includeContext=True)
 
