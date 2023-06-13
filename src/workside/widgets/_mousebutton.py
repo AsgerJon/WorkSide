@@ -54,20 +54,24 @@ class MouseButton(CoreWidget):
   def __init__(self, *args, **kwargs) -> None:
     CoreWidget.__init__(self, *args, **kwargs)
     self._mouseButton = self.parseArguments(*args, **kwargs)
-    self._pressHoldTimer = None
-    self._releaseDeadLineTimer = None
-    self._releaseClickDelayTimer = None
-    self._singleClickLockoutTimer = None
-    self._doubleClickLockoutTimer = None
-    self.singleClick.connect(self._getDoubleClickLockoutTimer().start)
+    # self._pressHoldTimer = None
+    # self._releaseDeadLineTimer = None
+    # self._releaseClickDelayTimer = None
+    # self._singleClickLockoutTimer = None
+    # self._doubleClickLockoutTimer = None
+    # self.singleClick.connect(lambda: print('singleClick emitted'))
+    self._first = True
 
   def mousePressEvent(self, event: QMouseEvent) -> NoReturn:
     """Implementation of mouse press event"""
-    if self._getSingleClickLockoutTimer().isActive():
+    if self._first:
+      self.singleClick.connect(self._getDoubleClickLockoutTimer().start)
+      self._first = False
+    if self._mouseButton == event.button():
+      if self._getSingleClickLockoutTimer().isActive():
+        return
       self._getReleaseClickDelayTimer().stop()
       self._getReleaseDeadLineTimer().stop()
-      return
-    if self._mouseButton == event.button():
       self._getPressHoldTimer().start()
       self._getReleaseDeadLineTimer().start()
 
@@ -75,8 +79,11 @@ class MouseButton(CoreWidget):
     """Implementation of mouse release event"""
     if self._mouseButton == event.button():
       self._getPressHoldTimer().stop()
+      if self._getSingleClickLockoutTimer().isActive():
+        return
       if self._getReleaseDeadLineTimer().isActive():
         self._getReleaseDeadLineTimer().stop()
+        self._getSingleClickLockoutTimer().start()
         return self._getReleaseClickDelayTimer().start()
 
   def mouseDoubleClickEvent(self, event: QMouseEvent) -> NoReturn:

@@ -36,6 +36,10 @@ class MainWindow(LayoutWindow):
 
   def debugFunc03(self) -> NoReturn:
     """omg"""
+    print(self._getDebugButton()._getLeftButton(
+    )._getDoubleClickLockoutTimer().remainingTime())
 
   def debugFunc04(self) -> NoReturn:
     """omg"""
+    print(self._getDebugButton()._getLeftButton(
+    )._getDoubleClickLockoutTimer().start())

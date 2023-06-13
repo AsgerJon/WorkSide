@@ -19,7 +19,7 @@ class Settings:
   movingDelayTime = 200
   releaseDeadLineTime = 350
   pressHoldTime = 500
-  singleClickLockoutTime = 200
+  singleClickLockoutTime = 300
   doubleClickLockoutTime = 200
   releaseClickDelayTime = 100
 
