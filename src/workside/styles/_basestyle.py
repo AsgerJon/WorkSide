@@ -5,8 +5,9 @@ from __future__ import annotations
 
 from typing import NoReturn, TYPE_CHECKING
 
-from PySide6.QtCore import Qt, QRect
-from PySide6.QtGui import QBrush, QFont, QPen, QColor, QPainter
+from PySide6.QtCore import Qt, QRect, QRectF
+from PySide6.QtGui import QBrush, QFont, QPen, QColor, QPainter, \
+  QFontMetrics, QFontMetricsF
 from icecream import ic
 from worktoy.core import maybe
 from worktoy.typetools import TypeBag
@@ -47,6 +48,7 @@ class BaseStyle:
     self._data = {}
     for (key, val) in BaseStyle._baseValues.items():
       self._data |= {key: data.get(key, val)}
+    self._fontMetrics = None
 
   def getData(self) -> dict:
     """Getter-function for data"""
@@ -71,6 +73,24 @@ class BaseStyle:
     fontSize = self._data.get('fontSize')
     font.setPointSize(max(fontSize, Settings.minimumFontSize))
     return font
+
+  def _createFontMetrics(self) -> NoReturn:
+    """Creator-function for font metrics"""
+    self._fontMetrics = QFontMetricsF(self.getFont())
+
+  def getFontMetrics(self) -> QFontMetricsF:
+    """Getter-function for font metrics"""
+    if self._fontMetrics is None:
+      self._createFontMetrics()
+      return self._fontMetrics
+    if isinstance(self._fontMetrics, QFontMetricsF):
+      return self._fontMetrics
+    msg = """Expected front metrics to be of type %s, but received: %s!"""
+    raise TypeError(msg % (QFontMetricsF, type(self._fontMetrics)))
+
+  def getBoundingRect(self, text: str) -> QRectF:
+    """Getter-function for bounding rect"""
+    return self.getFontMetrics().boundingRect(text)
 
   def getBrush(self) -> QBrush:
     """Getter-function for QBrush"""

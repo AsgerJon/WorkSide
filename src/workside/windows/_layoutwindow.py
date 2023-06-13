@@ -13,7 +13,7 @@ from icecream import ic
 from worktoy.core import maybe
 
 from workside.widgets import CoreWidget, Spacer, VSpacer, HSpacer, \
-  AbstractButton, DoubleSpacer, ToggleButton
+  DoubleSpacer, DebugButton
 from workside.widgets import Label
 from workside.windows import BaseWindow
 from workside.styles import headerStyle
@@ -38,8 +38,7 @@ class LayoutWindow(BaseWindow):
   def __init__(self, parent: QWidget = None) -> None:
     BaseWindow.__init__(self, parent)
     self._baseHeaderWidget = None
-    self._button = None
-    self._toggleButton = None
+    self._debugButton = None
     self._baseWidget = None
     self._fileLabel = None
     self._centralWidget = None
@@ -104,32 +103,18 @@ class LayoutWindow(BaseWindow):
       return self._baseHeaderWidget
     raise TypeError
 
-  def _createButton(self) -> NoReturn:
+  def _createDebugButton(self) -> NoReturn:
     """Creator-function for the button"""
-    self._button = AbstractButton()
+    self._debugButton = DebugButton()
 
-  def _getButton(self) -> AbstractButton:
+  def _getDebugButton(self) -> DebugButton:
     """Getter-function for the button"""
-    if self._button is None:
-      self._createButton()
-      return self._getButton()
-    if isinstance(self._button, AbstractButton):
-      return self._button
+    if self._debugButton is None:
+      self._createDebugButton()
+      return self._getDebugButton()
+    if isinstance(self._debugButton, DebugButton):
+      return self._debugButton
     raise TypeError
-
-  def _createToggleButton(self) -> NoReturn:
-    """Creator function for toggle button"""
-    self._toggleButton = ToggleButton()
-
-  def _getToggleButton(self) -> ToggleButton:
-    """Getter-function for the toggle button"""
-    if self._toggleButton is None:
-      self._createToggleButton()
-      return self._getToggleButton()
-    if isinstance(self._toggleButton, ToggleButton):
-      return self._toggleButton
-    msg = """Expected _toggleButton to be of type %s, but received!"""
-    raise TypeError(msg % (ToggleButton, type(self._toggleButton)))
 
   def _createBaseWidget(self) -> NoReturn:
     """Creator-function for the base widget"""
@@ -182,8 +167,8 @@ class LayoutWindow(BaseWindow):
     self._getBaseLayout().addWidget(self._getVSpacer(), 2, 1, )
     self._getBaseLayout().addWidget(self._getHSpacer(), 1, 2, )
     self._getBaseLayout().addWidget(self._getDoubleSpacer(), 1, 1, )
-    self._getBaseLayout().addWidget(self._getButton(), 2, 2, )
-    self._getBaseLayout().addWidget(self._getToggleButton(), 0, 2, )
+    self._getBaseLayout().addWidget(self._getDebugButton(), 2, 2, )
+    self._getBaseLayout().addWidget(self._getHSpacer(), 0, 2, )
     self._getBaseWidget().setLayout(self._getBaseLayout())
     self.setCentralWidget(self._getBaseWidget())
 

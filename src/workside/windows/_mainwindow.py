@@ -26,12 +26,13 @@ class MainWindow(LayoutWindow):
 
   def debugFunc01(self) -> NoReturn:
     """omg"""
-    for button in Qt.MouseButton:
-      buttonName = ('%s' % button).split('.')[-1]
-      print(buttonName)
+    self._getToggleButton()._getMovingDelayTimer().start()
+    if self._getToggleButton()._getMovingDelayTimer().isActive():
+      print('active')
 
   def debugFunc02(self) -> NoReturn:
     """omg"""
+    self._getToggleButton().movingActivated.emit()
 
   def debugFunc03(self) -> NoReturn:
     """omg"""

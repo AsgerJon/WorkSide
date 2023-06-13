@@ -23,6 +23,7 @@ def timer(timerName: str, interval: int, signal: str = None) -> CallMeMaybe:
     signalName = maybe(signal, timerName)
     _creatorName = '_create%sTimer' % Name
     _getterName = '_get%sTimer' % Name
+    _resetName = '_reset%sTimer' % Name
 
     init = getattr(cls, '__init__', None)
     if init is None:
@@ -49,11 +50,9 @@ def timer(timerName: str, interval: int, signal: str = None) -> CallMeMaybe:
       timer.timeout.connect(signal.emit)
       setattr(self, _name, timer)
 
-    setattr(cls, _creatorName, createTimer)
-
     def getTimer(self, ) -> QTimer:
       """Getter-function for the timer"""
-      _timer = getattr(self, _name)
+      _timer = getattr(self, _name, None)
       if _timer is None:
         _createTimer = getattr(self, _creatorName, )
         _getTimer = getattr(self, _getterName, )
@@ -64,7 +63,20 @@ def timer(timerName: str, interval: int, signal: str = None) -> CallMeMaybe:
       eMsg = """Expected a QTimer, but received: %s!""" % (type(_timer))
       raise TypeError(eMsg)
 
+    def resetTimer(self, ) -> QTimer:
+      """Resetter-function for the timer"""
+      _timer = getattr(self, _name)
+      if not isinstance(_timer, QTimer):
+        msg = """Expected _timer to be of type %s, but received %s"""
+        raise TypeError(msg % (QTimer, type(_timer)))
+      _timer.stop()
+      _timer.start()
+      return _timer
+
+    setattr(cls, _creatorName, createTimer)
     setattr(cls, _getterName, getTimer)
+
+    setattr(cls, _resetName, resetTimer)
 
     return cls
 

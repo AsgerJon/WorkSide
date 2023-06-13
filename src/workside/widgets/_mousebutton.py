@@ -59,7 +59,7 @@ class MouseButton(CoreWidget):
     self._releaseClickDelayTimer = None
     self._singleClickLockoutTimer = None
     self._doubleClickLockoutTimer = None
-    self.singleClick.connect(self._getDoubleClickLockoutTimer().start())
+    self.singleClick.connect(self._getDoubleClickLockoutTimer().start)
 
   def mousePressEvent(self, event: QMouseEvent) -> NoReturn:
     """Implementation of mouse press event"""

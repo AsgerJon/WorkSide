@@ -45,7 +45,6 @@ def buttonFactory(button: Qt.MouseButton | str) -> CallMeMaybe:
     buttonName = '%s%s' % (ButtonName[0].lower(), ButtonName[1:])
     _buttonName = '_%s' % buttonName
     getButtonName = '_get%s' % ButtonName
-    createButtonName = '_create%s' % ButtonName
     shortName = buttonName.replace('Button', '')
     pressHoldName = '%sPressHold' % shortName
     singleClickName = '%sClick' % shortName
@@ -55,45 +54,22 @@ def buttonFactory(button: Qt.MouseButton | str) -> CallMeMaybe:
     setattr(cls, singleClickName, Signal())
     setattr(cls, doubleClickName, Signal())
 
-    def _createButton(self, ) -> NoReturn:
-      """Creator-function for the button instance"""
-      mouseButton = MouseButton(self, button)
-      button.pressHold.connect(getattr(self, pressHoldName, ))
-      button.singleClick.connect(getattr(self, singleClickName, ))
-      button.doubleClick.connect(getattr(self, doubleClickName, ))
-      setattr(self, _buttonName, mouseButton)
+    oldInit = getattr(cls, '__init__', None)
 
-    setattr(cls, createButtonName, _createButton)
+    def postInit(self, *args, **kwargs) -> NoReturn:
+      """Estra initialization"""
+      oldInit(self, *args, **kwargs)
+      setattr(cls, _buttonName, MouseButton(cls, button))
+      getattr(getattr(cls, _buttonName, ), 'pressHold').connect(
+        getattr(self, pressHoldName).emit)
+      getattr(getattr(cls, _buttonName, ), 'singleClick').connect(
+        getattr(self, singleClickName).emit)
+      getattr(getattr(cls, _buttonName, ), 'doubleClick').connect(
+        getattr(self, doubleClickName).emit)
 
-    def _getButton(self, ) -> MouseButton:
-      """Getter-function for button"""
-      if getattr(self, _buttonName, ):
-        _create = getattr(self, createButtonName)
-        _create()
-        getter = getattr(self, '_getButton')
-        return getter()
-      finalButton = getattr(self, _buttonName)
-      if isinstance(finalButton, MouseButton):
-        return finalButton
-      msg = """Expected button to be of type MouseButton, but received %s"""
-      raise TypeError(msg % (type(self)))
+    setattr(cls, '__init__', postInit)
 
-    setattr(cls, getButtonName, _getButton)
-
-    init = getattr(cls, '__init__', None)
-    if init is None:
-      raise KeyError('__init__')
-
-    def _postInit(self, ) -> NoReturn:
-      """Extra __init__"""
-      setattr(self, buttonName, None)
-
-    def newInit(self, *args, **kwargs) -> NoReturn:
-      """New init function"""
-      init(self, *args, **kwargs)
-      _postInit(self)
-
-    setattr(cls, '__init__', newInit)
+    setattr(cls, getButtonName, lambda self: getattr(self, _buttonName))
 
     oldPress = getattr(cls, 'mousePressEvent')
     oldRelease = getattr(cls, 'mouseReleaseEvent')
@@ -101,28 +77,19 @@ def buttonFactory(button: Qt.MouseButton | str) -> CallMeMaybe:
 
     def newPressEvent(self, event: QMouseEvent) -> NoReturn:
       """New mouse press event"""
-      getattr(self, _buttonName).mousePressEvent(event)
-      oldPress(event)
-      return
+      getattr(cls, getButtonName)(self).mousePressEvent(event)
+      return oldPress(self, event)
 
     def newReleaseEvent(self, event: QMouseEvent) -> NoReturn:
       """New mouse press event"""
-      ic(self)
-      ic(_buttonName)
-      ic(getattr(self, _buttonName))
-      if getattr(self, _buttonName) is not None:
-        ic(self, _buttonName)
-      else:
-
-        QCoreApplication.quit()
-      getattr(self, _buttonName).mouseReleaseEvent(event)
-      oldRelease(event)
+      getattr(cls, getButtonName)(self).mouseReleaseEvent(event)
+      oldRelease(self, event)
       return
 
     def newDoubleClick(self, event: QMouseEvent) -> NoReturn:
       """New mouse press event"""
-      getattr(self, _buttonName).mouseDoubleClickEvent(event)
-      oldDoubleClick(event)
+      getattr(self, getButtonName, )().mouseDoubleClickEvent(event)
+      oldDoubleClick(self, event)
       return
 
     setattr(cls, 'mousePressEvent', newPressEvent)

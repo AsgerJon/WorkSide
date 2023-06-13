@@ -10,8 +10,8 @@ ic.configureOutput(includeContext=True)
 from ._corewidget import CoreWidget
 from ._mousebutton import MouseButton
 from ._buttonfactory import buttonFactory
-from ._togglebutton import ToggleButton
 from ._abstractbutton import AbstractButton
+from ._debugbutton import DebugButton
 from ._stylestates import AbstractStyleStates, AbstractButtonStyle
 from ._label import Label
 from ._listwidget import ListWidget
