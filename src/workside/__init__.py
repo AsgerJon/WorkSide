@@ -10,6 +10,7 @@ import time
 from icecream import ic
 import builtins
 
+from ._functionals import parseParent
 from worktoy.stringtools import stringList
 from worktoy.waitaminute import n00bError
 

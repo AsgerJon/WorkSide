@@ -3,9 +3,6 @@
 #  MIT Licence
 from __future__ import annotations
 
-from typing import NoReturn
-
-from PySide6.QtCore import Qt
 from icecream import ic
 
 from workside.windows import LayoutWindow
@@ -23,23 +20,3 @@ class MainWindow(LayoutWindow):
     self.setMinimumWidth(640)
     self.setMinimumHeight(480)
     self.setWindowTitle('Welcome to WorkSide!')
-
-  def debugFunc01(self) -> NoReturn:
-    """omg"""
-    self._getToggleButton()._getMovingDelayTimer().start()
-    if self._getToggleButton()._getMovingDelayTimer().isActive():
-      print('active')
-
-  def debugFunc02(self) -> NoReturn:
-    """omg"""
-    self._getToggleButton().movingActivated.emit()
-
-  def debugFunc03(self) -> NoReturn:
-    """omg"""
-    print(self._getDebugButton()._getLeftButton(
-    )._getDoubleClickLockoutTimer().remainingTime())
-
-  def debugFunc04(self) -> NoReturn:
-    """omg"""
-    print(self._getDebugButton()._getLeftButton(
-    )._getDoubleClickLockoutTimer().start())
