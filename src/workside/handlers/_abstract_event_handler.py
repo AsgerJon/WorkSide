@@ -1,7 +1,7 @@
 """WorkSide - Handlers - AbstractEventHandler
 Baseclass for event handlers."""
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
 from typing import Optional
@@ -9,16 +9,16 @@ from typing import Optional
 from PySide6.QtCore import QEvent
 from PySide6.QtWidgets import QWidget
 
-from worktoy.base import DefaultClass
+from worktoy.worktoyclass import WorkToyClass
 from workside.widgets import CoreWidget
 
 
-class AbstractEventHandler(DefaultClass):
+class AbstractEventHandler(WorkToyClass):
   """WorkSide - Handlers - AbstractEventHandler
   Baseclass for event handlers."""
 
   def __init__(self, *args, **kwargs) -> None:
-    DefaultClass.__init__(self, *args, **kwargs)
+    WorkToyClass.__init__(self, *args, **kwargs)
     self._fieldName = None
     self._widgetClass = None
 

@@ -1,7 +1,7 @@
 """WorkSide - Style - Draw
 Implementing descriptor access draw functionality. """
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
 from ._label_font import labelFontPen, labelFont, labelBrush, labelBoxPen
@@ -11,3 +11,4 @@ from ._label_font import subHeaderBrush, subHeaderBoxPen
 from ._color import Color
 from ._graphic import Graphic
 from ._text_label import TextLabel
+from ._settings import BackgroundStyleState, BackgroundStyle

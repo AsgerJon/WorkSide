@@ -1,13 +1,13 @@
 """WorkSide - Draw - TextLabel
 Settings used to draw label."""
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
 from PySide6.QtGui import QFont, QPen, QColor, Qt, QBrush
 
 from workside.draw import Graphic
-from worktoy.fields import Field
+from worktoy.descriptors import Field
 
 
 class TextLabel(Graphic):

@@ -1,35 +1,43 @@
 """WorkSide - Draw - Color"""
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
 from PySide6.QtGui import QColor
+from icecream import ic
 
-from worktoy.base import DefaultClass
-from worktoy.fields import IntAttribute
+from worktoy.worktoyclass import WorkToyClass
+from worktoy.descriptors import IntAttribute
 
 
-class Color(DefaultClass):
+class Color(WorkToyClass):
   """WorkSide - Settings - Styles - Color"""
 
   alpha = IntAttribute(255)
   red = IntAttribute(255)
   green = IntAttribute(255)
-  blue = IntAttribute(0)
+  blue = IntAttribute(255)
+
+  def hexify(self, uint8: int) -> str:
+    """Returns a string representation of the value given in HEX code."""
+    H = self.stringList('0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F')
+    return '%s%s' % (H[int(uint8 // 16)], H[int(uint8 % 16)])
 
   @classmethod
   def getDefaultInstance(cls) -> Color:
     """Getter-function for default instance"""
-    defaultInstance = cls(255, 255, 255, 0)
+    defaultInstance = cls(255, 255, 255, 255)
     return defaultInstance
 
   def __init__(self, *args, **kwargs) -> None:
-    DefaultClass.__init__(self, *args, **kwargs)
+    ic(args)
+    WorkToyClass.__init__(self, *args, **kwargs)
     redKwarg = self.maybeKey(int, 'red', **kwargs)
     greenKwarg = self.maybeKey(int, 'green', **kwargs)
     blueKwarg = self.maybeKey(int, 'blue', **kwargs)
     alphaKwarg = self.maybeKey(int, 'alpha', **kwargs)
     rgba = self.maybeTypes(int, padChar=None, pad=4)
+    ic(rgba)
     redArg, greenArg, blueArg, alphaArg = rgba
     defaultValues = 255, 255, 255, 0
     redDefault, greenDefault, blueDefault, alphaDefault = defaultValues
@@ -41,3 +49,14 @@ class Color(DefaultClass):
   def asQColor(self) -> QColor:
     """Returns QColor representation"""
     return QColor(self.red, self.green, self.blue, self.alpha)
+
+  def __str__(self, ) -> str:
+    """String representation."""
+    red = self.hexify(self.red)
+    green = self.hexify(self.green)
+    blue = self.hexify(self.blue)
+    return '#%s%s%s' % (red, green, blue)
+
+  def __repr__(self, ) -> str:
+    """Code representation."""
+    return 'RBG(%d, %d, %d)' % (self.red, self.green, self.blue)

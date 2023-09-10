@@ -1,7 +1,7 @@
 """WorkSide - Widgets - TextWidget
 Implementing text labels on the paint event."""
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
 from PySide6.QtCore import Qt
@@ -12,7 +12,7 @@ from workside.draw import subHeaderBoxPen, headerBoxPen, labelBoxPen
 from workside.draw import labelFont, headerFont, subHeaderFont
 from workside.draw import labelBrush, headerBrush, subHeaderBrush
 from workside.widgets import CoreWidget
-from worktoy.fields import Field
+from worktoy.descriptors import Field
 
 
 class TextWidget(CoreWidget):
@@ -28,12 +28,12 @@ class TextWidget(CoreWidget):
     self._setTextLevel(textLevel)
 
   @text.getter
-  def text(self, *args) -> str:
+  def getText(self, *args) -> str:
     """Getter-function for the text contained in the widget."""
     return self._text
 
   @text.setter
-  def text(self, *args) -> None:
+  def setText(self, *args) -> None:
     """Setter-function for the text contained in the widget."""
     for arg in args:
       if isinstance(arg, str):

@@ -1,7 +1,7 @@
 """WorkSide - Widgets - WorkPainter
 Custom implementation of QPainter."""
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 else:
   CoreWidget, TextWidget = QWidget, QWidget
 
-from worktoy.fields import Field
+from worktoy.descriptors import Field
 
 
 class WorkPainter(QPainter):
@@ -104,7 +104,7 @@ class WorkPainter(QPainter):
     """Draws outline around the background."""
     viewRect = self.viewport()
     widget = self.getActiveWidget()
-    if not isinstance(widget, TextWidget):
+    if not isinstance(widget, CoreWidget):
       return
     self.setBrush(widget.backgroundBrush)
     self.setPen(widget.backgroundPen)

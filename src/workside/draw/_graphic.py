@@ -1,16 +1,16 @@
 """WorkSide - Draw - Graphic
 Settings used by WorkPainter to perform a particular drawing operation."""
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
 from PySide6.QtGui import QFont, QPen, QBrush
 
-from worktoy.base import DefaultClass
-from worktoy.fields import Field
+from worktoy.worktoyclass import WorkToyClass
+from worktoy.descriptors import Field
 
 
-class Graphic(DefaultClass):
+class Graphic(WorkToyClass):
   """WorkSide - Draw - Graphic
   Settings used by WorkPainter to perform a particular drawing operation."""
 
@@ -19,7 +19,7 @@ class Graphic(DefaultClass):
   brush = Field()
 
   def __init__(self, *args, **kwargs) -> None:
-    DefaultClass.__init__(self, *args, **kwargs)
+    WorkToyClass.__init__(self, *args, **kwargs)
 
   @font.getter
   def getFont(self, obj: object, *args) -> QFont:

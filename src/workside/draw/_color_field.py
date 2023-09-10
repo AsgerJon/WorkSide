@@ -1,23 +1,23 @@
 """WorkSide - Draw - ColorField
 Field descriptor for the color value."""
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
 from workside.draw import Color
 from workside.widgets import CoreWidget
-from worktoy.base import DefaultClass
-from worktoy.fields import StrAttribute
+from worktoy.worktoyclass import WorkToyClass
+from worktoy.descriptors import StrAttribute
 
 
-class ColorField(DefaultClass):
+class ColorField(WorkToyClass):
   """WorkSide - Draw - ColorField
   Field descriptor for the color value."""
 
   fieldName = StrAttribute()
 
   def __init__(self, *args, **kwargs) -> None:
-    DefaultClass.__init__(self, *args, **kwargs)
+    WorkToyClass.__init__(self, *args, **kwargs)
     self._defaultValue = Color.getDefaultInstance()
     self._type = Color
     self._fieldOwner = None
