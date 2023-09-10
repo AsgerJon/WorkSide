@@ -8,10 +8,13 @@ import json
 import os
 
 from PySide6.QtGui import QColor
+from icecream import ic
 from worktoy.descriptors import IntAttribute, Field, StrAttribute
 from worktoy.worktoyclass import WorkToyClass
 
 from workside.draw import Color
+
+ic.configureOutput(includeContext=True)
 
 
 class BackgroundStyleState(WorkToyClass):
@@ -56,9 +59,11 @@ class BackgroundStyleState(WorkToyClass):
   @borderColor.setter
   def setBorderColor(self, color: Color) -> None:
     """Setter-function for the border color."""
+    ic(color)
     self.borderRed = color.red
     self.borderGreen = color.green
     self.borderBlue = color.blue
+    ic(self.borderColor)
 
   @fillColor.setter
   def setFillColor(self, color: Color) -> None:
@@ -84,20 +89,27 @@ class BackgroundStyleState(WorkToyClass):
   @staticmethod
   def dictColor(rgb: dict) -> Color:
     """Loads a color from the rgb data"""
+    ic(rgb)
     red = rgb.get('red', 255)
     green = rgb.get('green', 255)
     blue = rgb.get('blue', 255)
+    ic(red, green, blue)
+    input('continue?')
     return Color(red, green, blue)
 
   @classmethod
   def fromJson(cls, data: dict, keyName: str) -> BackgroundStyleState:
     """Creates an instance from the data in the json data entry. """
+    ic(data)
     cls.__core_instance__ = cls()
     state = cls()
     state.cornerRadius = data.get('cornerRadius', state.cornerRadius)
     state.borderWidth = data.get('borderWidth', state.borderWidth)
-    state.border = cls.dictColor(data.get('border', {}))
-    state.fill = cls.dictColor(data.get('fill', {}))
+    borderData = data.get('border', {})
+    borderColor = cls.dictColor(borderData)
+    ic(borderColor)
+    state.borderColor = borderColor
+    state.fillColor = cls.dictColor(data.get('fill', {}))
     state.stateName = keyName
     return state
 
@@ -158,6 +170,7 @@ class BackgroundStyle(WorkToyClass):
     data = cls.parseJson()
     for (key, val) in data.items():
       state = BackgroundStyleState.fromJson(val, key)
+      ic(key, val)
       cls.getStyleStates().update({key: state})
 
   def __str__(self, ) -> str:
