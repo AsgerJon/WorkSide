@@ -9,6 +9,8 @@ from icecream import ic
 from worktoy.worktoyclass import WorkToyClass
 from worktoy.descriptors import IntAttribute
 
+ic.configureOutput(includeContext=True)
+
 
 class Color(WorkToyClass):
   """WorkSide - Settings - Styles - Color"""
@@ -30,9 +32,6 @@ class Color(WorkToyClass):
     return defaultInstance
 
   def __init__(self, *args, **kwargs) -> None:
-    if kwargs.get('_recursion', False):
-      return
-    ic(args)
     WorkToyClass.__init__(self, *args, **kwargs)
     redKwarg = self.maybeKey(int, 'red', **kwargs)
     greenKwarg = self.maybeKey(int, 'green', **kwargs)
@@ -43,13 +42,9 @@ class Color(WorkToyClass):
     defaultValues = 255, 255, 255, 0
     redDefault, greenDefault, blueDefault, alphaDefault = defaultValues
     self.red = self.maybe(redKwarg, redArg, redDefault)
-    ic(redKwarg, redArg, redDefault, self.red)
     self.green = self.maybe(greenKwarg, greenArg, greenDefault)
     self.blue = self.maybe(blueKwarg, blueArg, blueDefault)
     self.alpha = self.maybe(alphaKwarg, alphaArg, alphaDefault)
-    ic(self.red, self.green, self.blue, self.alpha, )
-    ic(self)
-    return self.__init__(*args, **kwargs, _recursion=True)
 
   def asQColor(self) -> QColor:
     """Returns QColor representation"""

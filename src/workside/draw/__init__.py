@@ -11,4 +11,5 @@ from ._label_font import subHeaderBrush, subHeaderBoxPen
 from ._color import Color
 from ._graphic import Graphic
 from ._text_label import TextLabel
-from ._settings import BackgroundStyleState, BackgroundStyle
+from ._background_style_state import BackgroundStyleState
+from ._settings import BackgroundStyle
