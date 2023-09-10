@@ -13,3 +13,5 @@ from ._graphic import Graphic
 from ._text_label import TextLabel
 from ._background_style_state import BackgroundStyleState
 from ._background_style import BackgroundStyle
+from ._font_style_state import FontStyleState
+from ._font_style import FontStyle

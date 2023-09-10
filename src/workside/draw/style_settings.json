@@ -20,9 +20,9 @@
       "blue": 230
     },
     "border": {
-      "red": 179,
-      "green": 179,
-      "blue": 179
+      "red": 91,
+      "green": 91,
+      "blue": 91
     },
     "borderWidth": 2,
     "cornerRadius": 5

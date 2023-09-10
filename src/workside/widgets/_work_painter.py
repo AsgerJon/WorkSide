@@ -7,15 +7,20 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from PySide6.QtGui import QColor, QBrush
-from PySide6.QtGui import QPainter, Qt, QFontMetrics, QPen
+from PySide6.QtGui import QPainter, Qt, QPen
 from PySide6.QtWidgets import QWidget
+from icecream import ic
+
+from workside.draw import BackgroundStyleState, FontStyleState
 
 if TYPE_CHECKING:
-  from workside.widgets import CoreWidget, TextWidget
+  from workside.widgets import CoreWidget
 else:
   CoreWidget, TextWidget = QWidget, QWidget
 
-from worktoy.descriptors import Field
+from worktoy.descriptors import Field, IntAttribute
+
+ic.configureOutput(includeContext=True)
 
 
 class WorkPainter(QPainter):
@@ -24,6 +29,9 @@ class WorkPainter(QPainter):
 
   blankPen = Field()
   blankBrush = Field()
+
+  radius = IntAttribute(1)
+  width = IntAttribute(1)
 
   @blankBrush.getter
   def getBlankBrush(self, *args) -> QBrush:
@@ -69,43 +77,47 @@ class WorkPainter(QPainter):
     self._widget = None
     return QPainter.end(self)
 
-  def printText(self) -> None:
-    """Prints the available text from the widget."""
-    viewRect = self.viewport()
-    widget = self.getActiveWidget()
-    if not isinstance(widget, TextWidget):
-      return
-    text = widget.text
-    flags = widget.getAlignmentFlags()
-    font = widget.getFont()
-    fontPen = widget.getFontPen()
-    brush = widget.getBrush()
-    boxPen = widget.getBoxPen()
-    metrics = QFontMetrics(font, )
-    textRect = metrics.boundingRect(viewRect, flags, text)
-    self.setPen(boxPen)
-    self.setBrush(brush)
-    self.drawRect(textRect)
-    self.setPen(fontPen)
-    self.setFont(font)
-    self.drawText(textRect, flags, text)
+  def __matmul__(self, other: BackgroundStyleState) -> WorkPainter:
+    """Applies the style settings from other to self."""
+    if isinstance(other, BackgroundStyleState):
+      self.setPen(other.pen)
+      self.setBrush(other.brush)
+      self.radius = other.radius
+      self.width = other.width
+      return self
+    if isinstance(other, FontStyleState):
+      if other.fillRect:
+        self.setPen(other.fillPen)
+        self.setBrush(other.fillBrush)
+        other.fillRect = False
+        other.drawText = True
+        return self
+      self.setPen(other.fontPen)
+      self.setFont(other.font)
+      other.fillRect = True
+      other.drawText = False
+      return self
 
-  def fillBackground(self, ) -> None:
-    """Fills the background."""
-    viewRect = self.viewport()
-    widget = self.getActiveWidget()
-    if not isinstance(widget, CoreWidget):
-      return
-    self.setBrush(widget.backgroundBrush)
-    self.setPen(self.blankPen)
-    self.drawRoundedRect(viewRect, 8, 8, )
+  def __rmatmul__(self, other: BackgroundStyleState) -> WorkPainter:
+    """Applies the style settings from other to self."""
+    return self @ other
 
-  def outlineBackground(self) -> None:
-    """Draws outline around the background."""
-    viewRect = self.viewport()
-    widget = self.getActiveWidget()
-    if not isinstance(widget, CoreWidget):
-      return
-    self.setBrush(widget.backgroundBrush)
-    self.setPen(widget.backgroundPen)
-    self.drawRoundedRect(viewRect, 8, 8, )
+  @classmethod
+  def paintMeLike(cls, widget: CoreWidget) -> None:
+    """Manages the paint event on the widget. The fields and attributes on
+    the widgets tells the painter how to paint it."""
+    painter = cls()
+    painter.begin(widget)
+    viewRect = painter.viewport()
+    if widget.drawBackground:
+      painter = widget.backgroundStyle @ painter
+      painter.drawRect(viewRect)
+    if widget.drawText:
+      textRect = widget.getTextRect()
+      textFlags = widget.getAlignmentFlags()
+      ic(textFlags)
+      painter = widget.fontStyle @ painter
+      painter.drawRoundedRect(textRect, 1, 1)
+      painter = widget.fontStyle @ painter
+      painter.drawText(textRect, textFlags, widget.text)
+      painter.end()
