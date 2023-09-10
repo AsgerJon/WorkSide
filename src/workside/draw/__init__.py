@@ -12,4 +12,4 @@ from ._color import Color
 from ._graphic import Graphic
 from ._text_label import TextLabel
 from ._background_style_state import BackgroundStyleState
-from ._settings import BackgroundStyle
+from ._background_style import BackgroundStyle
