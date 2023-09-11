@@ -5,27 +5,37 @@ can extend this behaviour as needed."""
 #  MIT Licence
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, Any
 
-from PySide6.QtGui import QColor
+from PySide6.QtGui import QColor, QPen, QBrush
 from icecream import ic
-from worktoy.descriptors import IntAttribute, Field
-from worktoy.worktoyclass import WorkToyClass
+from worktoy.descriptors import Field
+
+from workside.tools import AbstractTools
 
 NumColor = Optional[tuple[int, int, int, int]]
+FloatColor = tuple[float, float, float, float]
 
 ic.configureOutput(includeContext=True)
 
 
-class Color(WorkToyClass):
+class Color(AbstractTools):
   """WorkSide - Utilities - Color
   Class representation of colors. Provides parsing and blending. Subclasses
   can extend this behaviour as needed."""
+
+  Q = Field()
+  F = Field()
 
   red = Field()
   green = Field()
   blue = Field()
   alpha = Field()
+
+  redF = Field()
+  greenF = Field()
+  blueF = Field()
+  alphaF = Field()
 
   redKeys = Field()
   greenKeys = Field()
@@ -33,10 +43,50 @@ class Color(WorkToyClass):
   alphaKeys = Field()
   colorKeys = Field()
 
+  @F.getter
+  def getColorF(self) -> FloatColor:
+    """Getter-function for the rgba tuple with channels at unit scale."""
+    red = self.red
+    green = self.green
+    blue = self.blue
+    alpha = self.alpha
+    rgba = [red, green, blue, alpha]
+    rgbaF = [c / 255 for c in rgba]
+    return tuple(*rgbaF, )
+
+  @redF.getter
+  def getRedF(self) -> float:
+    """Getter-function for the unit scale of red"""
+    return self.red / 255
+
+  @greenF.getter
+  def getGreenF(self) -> float:
+    """Getter-function for the unit scale of green"""
+    return self.green / 255
+
+  @blueF.getter
+  def getBlueF(self) -> float:
+    """Getter-function for the unit scale of blue"""
+    return self.blue / 255
+
+  @alphaF.getter
+  def getAlphaF(self) -> float:
+    """Getter-function for the unit scale of alpha"""
+    return self.alpha / 255
+
+  @Q.getter
+  def getQColor(self) -> QColor:
+    """Getter-function for this color as an instance of QColor."""
+    red, green, blue, alpha = self.red, self.green, self.blue, self.alpha
+    return QColor(red, green, blue, alpha)
+
+  @redF.getter
+  def getRedF(self, *_) -> float:
+    """Returns the floating point at unit scale"""
+
   @red.getter
-  def getRed(self, *args) -> int:
+  def getRed(self, *_) -> int:
     """Getter-function for red color"""
-    ic(args)
     return self.maybe(self._red, 0)
 
   @red.setter
@@ -133,6 +183,12 @@ class Color(WorkToyClass):
       alpha = 255
       if len(intArgs) > 3:
         alpha = intArgs[3]
+      if all([i in [0, 1] for i in [red, green, blue]]):
+        red *= 255
+        green *= 255
+        blue *= 255
+        if alpha == 1:
+          alpha = 255
       return red, green, blue, alpha
 
   def _intKwargParse(self, **kwargs) -> NumColor:
@@ -192,62 +248,48 @@ class Color(WorkToyClass):
       return dict(red=r, green=g, blue=b, alpha=a)
 
   def __init__(self, *args, **kwargs) -> None:
+    AbstractTools.__init__(self, *args, **kwargs)
     self._red, self._green, self._blue, self._alpha = 0, 0, 0, 255
-    ic(self)
-    WorkToyClass.__init__(self, *args, **kwargs)
     numColor = self._parseNumeric(*args, **kwargs)
-    ic(numColor)
     if isinstance(numColor, dict):
-      ic(numColor)
-      ic(numColor.get('red', None))
-      ic(numColor.get('green', None))
-      ic(numColor.get('blue', None))
-      ic(numColor.get('alpha', None))
-      ic(self)
       self.red = numColor.get('red', None)
       self.blue = numColor.get('blue', None)
       self.green = numColor.get('green', None)
       self.alpha = numColor.get('alpha', None)
-      ic(self)
 
     argColor = self.maybeType(Color, *args)
     argQColor = self.maybeType(QColor, *args)
     colorKwarg = self.searchKeys(*self.colorKeys, **kwargs)
     colorArg = self.maybe(colorKwarg, argColor, argQColor)
-    ic(colorArg)
-    ic(self)
 
     if isinstance(colorArg, QColor):
       self.red = colorArg.red()
       self.blue = colorArg.blue()
       self.green = colorArg.green()
       self.alpha = colorArg.alpha()
-    ic(self)
 
     if isinstance(colorArg, Color):
-      ic(type(colorArg))
-      ic(colorArg.red)
-      ic(self.red)
       self.red = colorArg.red
-      ic(self.red)
-      ic(self.green)
       self.green = colorArg.green
-      ic(self.green)
-      ic(self.blue)
       self.blue = colorArg.blue
-      ic(self.blue)
-      ic(self.alpha)
       self.alpha = colorArg.alpha
-      ic(self.alpha)
-    ic(self)
+
+  def toolSupport(self, tool: type) -> bool:
+    """QBrush, QPen and QColor is supported. In the case of QColor,
+    the color is replaced with this color."""
+    supportedTools = [QBrush, QPen, QColor]
+    return True if tool in supportedTools else False
+
+  def applyTool(self, other: Any) -> Any:
+    """Applies this color to the given tool."""
+    if isinstance(other, (QBrush, QPen)):
+      other.setColor(self.Q)
+      return other
+    if isinstance(other, QColor):
+      return self.Q
 
   def __str__(self, ) -> str:
     """String representation."""
-    ic(type(self))
-    ic(self.red)
-    ic(self.green)
-    ic(self.blue)
-    ic(self.alpha)
     red = self.hexify(self.red)
     green = self.hexify(self.green)
     blue = self.hexify(self.blue)
@@ -263,3 +305,44 @@ class Color(WorkToyClass):
     blue = self.blue
     alpha = self.alpha
     return 'Color(%d, %d, %d, %d)' % (red, green, blue, alpha)
+
+  def __bool__(self, ) -> bool:
+    """The boolean checks if the alpha channel is zero"""
+    return True if self.alpha else False
+
+  def __eq__(self, other: Any) -> bool:
+    """Ignores the alpha channel."""
+    if isinstance(other, Color):
+      if self.red - other.red:
+        return False
+      if self.green - other.green:
+        return False
+      if self.blue - other.blue:
+        return False
+      return True
+    if isinstance(other, QColor):
+      return self == Color(other)
+
+  def __abs__(self) -> float:
+    """The absolute value is understood to be the length of the rgb vector:
+    RGB = <red, green, blue>
+    abs(RGB) * alpha / 255"""
+    red, green, blue, alpha = self.red, self.green, self.blue, self.alpha
+    return (red ** 2 + green ** 2 + blue ** 2) ** 0.5 * alpha / 255
+
+  def __pos__(self, ) -> Color:
+    """Creates a copy of this color with full opacity"""
+    newColor = Color(self)
+    newColor.alpha = 255
+    return newColor
+
+  def __sub__(self, other: Color) -> float:
+    """Estimates the difference between self and other"""
+    redMean = 0.5 * self.redF + 0.5 * other.redF
+    dRed = self.redF - other.redF
+    dGreen = self.greenF - other.greenF
+    dBlue = self.blueF - other.blueF
+    d2red = (2 + redMean) * dRed ** 2
+    d2green = 4 * dGreen ** 2
+    d2blue = (3 - redMean) * dBlue ** 2
+    return (d2red + d2green + d2blue) ** 0.5

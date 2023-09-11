@@ -9,6 +9,8 @@ from PySide6.QtGui import QPaintEvent, QPainter, QPen, QColor
 from PySide6.QtWidgets import QWidget
 from worktoy.worktoyclass import WorkToyClass
 
+from workside.tools import Color
+
 
 class GraphCanvas(QWidget, WorkToyClass):
   """WorkSide - Widgets - GraphCanvas
@@ -125,16 +127,12 @@ class GraphCanvas(QWidget, WorkToyClass):
 
   def penFactory(self, *args, **kwargs) -> QPen:
     """QPen factory"""
-    defaultWidth = 1
-    defaultColor = QColor(0, 0, 0, 255)
-    defaultStyle = Qt.PenStyle.SolidLine
-    widthKeys = self.stringList("""width, penWidth, lineWidth, weight""")
-    styleKeys = self.stringList("""style, lineStyle, penStyle, lineStyle""")
-
-    self.searchKey(*self.stringList(), **kwargs)
-    kwargWidth = kwargs.get('width', None)
-    kwargColor = kwargs.get('color', None)
-    kwargStyle = kwargs.get('style', None)
+    penColor = Color(*args, **kwargs)
+    solid = Qt.PenStyle.SolidLine
+    dash = Qt.PenStyle.DashLine
+    dot = Qt.PenStyle.DotLine
+    dashDot = Qt.PenStyle.DashDotLine
+    dashDotDot = Qt.PenStyle.DashDotDotLine
 
   def getViewPort(self, ) -> QRect:
     """Getter-function for the viewport"""
