@@ -57,7 +57,7 @@ class FontStyleState(WorkToyClass):
   size = IntAttribute()
   state = StrAttribute()
 
-  @fillPenColor.getter
+  @fillPenColor.GET
   def getFillPenColor(self) -> Color:
     """Getter-function for the fill pen color that outlines the background
     behind the textbox."""
@@ -66,28 +66,28 @@ class FontStyleState(WorkToyClass):
     blue = self.fillPenBlue
     return Color(red, green, blue)
 
-  @fillPenColor.setter
+  @fillPenColor.SET
   def setFillPenColor(self, color: Color) -> None:
     """Setter-function for the fill pen"""
     self.fillPenRed = color.red
     self.fillPenGreen = color.green
     self.fillPenBlue = color.blue
 
-  @fillPenQColor.getter
+  @fillPenQColor.GET
   def getFillPenQColor(self) -> QColor:
     red = self.fillPenRed
     green = self.fillPenGreen
     blue = self.fillPenBlue
     return QColor(red, green, blue)
 
-  @fillPenQColor.setter
+  @fillPenQColor.SET
   def setFillPenQColor(self, color: QColor) -> None:
     """Setter-function for the fill pen"""
     self.fillPenRed = color.red()
     self.fillPenGreen = color.green()
     self.fillPenBlue = color.blue()
 
-  @fontFillColor.getter
+  @fontFillColor.GET
   def getFontFillColor(self) -> Color:
     """Getter-function for the font pen color"""
     red = self.fontFillRed
@@ -95,14 +95,14 @@ class FontStyleState(WorkToyClass):
     blue = self.fontFillBlue
     return Color(red, green, blue)
 
-  @fontFillColor.setter
+  @fontFillColor.SET
   def setFontFillColor(self, color: Color) -> None:
     """Setter-function for the font pen color"""
     self.fontFillRed = color.red
     self.fontFillGreen = color.green
     self.fontFillBlue = color.blue
 
-  @fontFillQColor.getter
+  @fontFillQColor.GET
   def getFontFillQColor(self) -> Color:
     """Getter-function for the font pen color"""
     red = self.fontFillRed
@@ -110,38 +110,38 @@ class FontStyleState(WorkToyClass):
     blue = self.fontFillBlue
     return QColor(red, green, blue)
 
-  @fontFillQColor.setter
+  @fontFillQColor.SET
   def setFontFillQColor(self, color: QColor) -> None:
     """Setter-function for the font pen color"""
     self.fontFillRed = color.red()
     self.fontFillGreen = color.green()
     self.fontFillBlue = color.blue()
 
-  @fontPenColor.getter
+  @fontPenColor.GET
   def getFontPenColor(self) -> Color:
     """Getter-function for the font pen color"""
     return Color(self.fontPenRed, self.fontPenGreen, self.fontPenBlue)
 
-  @fontPenColor.setter
+  @fontPenColor.SET
   def setFontPenColor(self, color: Color) -> None:
     """Setter-function for the font pen color"""
     self.fontPenRed = color.red
     self.fontPenGreen = color.green
     self.fontPenBlue = color.blue
 
-  @fontPenQColor.getter
+  @fontPenQColor.GET
   def getFontPenQColor(self) -> QColor:
     """Getter-function for the font pen color as QColor"""
     return QColor(self.fontPenRed, self.fontPenGreen, self.fontPenBlue)
 
-  @fontPenQColor.setter
+  @fontPenQColor.SET
   def setFontPenQColor(self, color: QColor) -> None:
     """Setter-function for the font pen color"""
     self.fontPenRed = color.red()
     self.fontPenGreen = color.green()
     self.fontPenBlue = color.blue()
 
-  @fontPen.getter
+  @fontPen.GET
   def getFontPen(self) -> QPen:
     """Getter-function for the font pen"""
     pen = QPen()
@@ -150,7 +150,7 @@ class FontStyleState(WorkToyClass):
     pen.setWidth(1)
     return pen
 
-  @fillBrush.getter
+  @fillBrush.GET
   def getFillBrush(self) -> QBrush:
     """Getter-function for fill brush"""
     brush = QBrush()
@@ -158,7 +158,7 @@ class FontStyleState(WorkToyClass):
     brush.setColor(self.fontFillQColor)
     return brush
 
-  @fillPen.getter
+  @fillPen.GET
   def getFillPen(self, ) -> QPen:
     """Getter-function for the pen drawing the outline around the textbox."""
     pen = QPen()
@@ -167,12 +167,12 @@ class FontStyleState(WorkToyClass):
     pen.setWidth(1)
     return pen
 
-  @fontMetrics.getter
+  @fontMetrics.GET
   def getFontMetrics(self) -> QFontMetrics:
     """Getter-function for the QFontMetrics"""
     return QFontMetrics(self.font, )
 
-  @font.getter
+  @font.GET
   def getFont(self) -> QFont:
     """Getter-function for font as QFont instance."""
     font = QFont()
@@ -182,7 +182,7 @@ class FontStyleState(WorkToyClass):
     font.setItalic(self.italic)
     return font
 
-  @font.setter
+  @font.SET
   def setFont(self, font: QFont) -> None:
     """Setter-function for QFont"""
     self.family = font.family()

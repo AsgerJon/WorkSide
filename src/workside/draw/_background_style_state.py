@@ -73,7 +73,7 @@ class BackgroundStyleState(WorkToyClass):
     """Getter-function for Color of the border as a QColor instance"""
     return QColor(self.fillRed, self.fillGreen, self.fillBlue)
 
-  @pen.getter
+  @pen.GET
   def getPen(self, *_) -> QPen:
     """Getter-function for the pen"""
     pen = QPen()
@@ -82,7 +82,7 @@ class BackgroundStyleState(WorkToyClass):
     pen.setWidth(self.width)
     return pen
 
-  @brush.getter
+  @brush.GET
   def getBrush(self, *_) -> QBrush:
     """Getter-function for the brush"""
     brush = QBrush()

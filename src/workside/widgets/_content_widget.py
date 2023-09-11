@@ -19,7 +19,7 @@ class ContentWidget(CoreWidget):
   def __init__(self, *args, **kwargs) -> None:
     CoreWidget.__init__(self, *args, **kwargs)
 
-  @text.getter
+  @text.GET
   def getText(self) -> str:
     """Getter-function for the text"""
     return 'x: %.0f | y: %.0f' % (self.mouseX, self.mouseY)

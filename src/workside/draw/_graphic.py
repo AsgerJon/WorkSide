@@ -21,14 +21,14 @@ class Graphic(WorkToyClass):
   def __init__(self, *args, **kwargs) -> None:
     WorkToyClass.__init__(self, *args, **kwargs)
 
-  @font.getter
+  @font.GET
   def getFont(self, obj: object, *args) -> QFont:
     """Getter-function for the font."""
 
-  @pen.getter
+  @pen.GET
   def getPen(self, *args, ) -> QPen:
     """Getter-function for the pen."""
 
-  @brush.getter
+  @brush.GET
   def getPen(self, *args, ) -> QBrush:
     """Getter-function for the brush."""

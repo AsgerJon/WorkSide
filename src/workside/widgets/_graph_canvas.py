@@ -127,12 +127,12 @@ class GraphCanvas(QWidget, WorkToyClass):
 
   def penFactory(self, *args, **kwargs) -> QPen:
     """QPen factory"""
-    penColor = Color(*args, **kwargs)
-    solid = Qt.PenStyle.SolidLine
-    dash = Qt.PenStyle.DashLine
-    dot = Qt.PenStyle.DotLine
-    dashDot = Qt.PenStyle.DashDotLine
-    dashDotDot = Qt.PenStyle.DashDotDotLine
+    intArgs = self.maybeTypes(int, *args)
+    widthArg = None
+    if intArgs:
+      widthArg = min(intArgs)
+    widthKeys = self.stringList("""width, w, lineWidth, lineThickness, 
+      thickness""")
 
   def getViewPort(self, ) -> QRect:
     """Getter-function for the viewport"""

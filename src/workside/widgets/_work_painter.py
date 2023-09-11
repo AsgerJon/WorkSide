@@ -33,7 +33,7 @@ class WorkPainter(QPainter):
   radius = IntAttribute(1)
   width = IntAttribute(1)
 
-  @blankBrush.getter
+  @blankBrush.GET
   def getBlankBrush(self, *args) -> QBrush:
     """Getter-function for the blank brush"""
     brush = QBrush()
@@ -41,7 +41,7 @@ class WorkPainter(QPainter):
     brush.setColor(QColor(255, 255, 255, 0))
     return brush
 
-  @blankPen.getter
+  @blankPen.GET
   def getBlankPen(self, *args) -> QPen:
     """Getter-function for the blank pen"""
     pen = QPen()

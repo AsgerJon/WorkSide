@@ -43,7 +43,7 @@ class Color(AbstractTools):
   alphaKeys = Field()
   colorKeys = Field()
 
-  @F.getter
+  @F.GET
   def getColorF(self) -> FloatColor:
     """Getter-function for the rgba tuple with channels at unit scale."""
     red = self.red
@@ -54,101 +54,97 @@ class Color(AbstractTools):
     rgbaF = [c / 255 for c in rgba]
     return tuple(*rgbaF, )
 
-  @redF.getter
+  @redF.GET
   def getRedF(self) -> float:
     """Getter-function for the unit scale of red"""
     return self.red / 255
 
-  @greenF.getter
+  @greenF.GET
   def getGreenF(self) -> float:
     """Getter-function for the unit scale of green"""
     return self.green / 255
 
-  @blueF.getter
+  @blueF.GET
   def getBlueF(self) -> float:
     """Getter-function for the unit scale of blue"""
     return self.blue / 255
 
-  @alphaF.getter
+  @alphaF.GET
   def getAlphaF(self) -> float:
     """Getter-function for the unit scale of alpha"""
     return self.alpha / 255
 
-  @Q.getter
+  @Q.GET
   def getQColor(self) -> QColor:
     """Getter-function for this color as an instance of QColor."""
     red, green, blue, alpha = self.red, self.green, self.blue, self.alpha
     return QColor(red, green, blue, alpha)
 
-  @redF.getter
-  def getRedF(self, *_) -> float:
-    """Returns the floating point at unit scale"""
-
-  @red.getter
+  @red.GET
   def getRed(self, *_) -> int:
     """Getter-function for red color"""
     return self.maybe(self._red, 0)
 
-  @red.setter
+  @red.SET
   def setRed(self, newRed: int) -> None:
     """Setter-function for red color"""
     self._red = newRed
 
-  @green.getter
+  @green.GET
   def getGreen(self) -> int:
     """Getter-function for green color"""
     return self.maybe(self._green, 0)
 
-  @green.setter
+  @green.SET
   def setGreen(self, newGreen: int) -> None:
     """Setter-function for green color"""
     self._green = newGreen
 
-  @blue.getter
+  @blue.GET
   def getBlue(self) -> int:
     """Getter-function for blue color"""
     return self.maybe(self._blue, 0)
 
-  @blue.setter
+  @blue.SET
   def setBlue(self, newBlue: int) -> None:
     """Setter-function for blue color"""
     self._blue = newBlue
 
-  @alpha.getter
+  @alpha.GET
   def getAlpha(self) -> int:
     """Getter-function for alpha color"""
     return self.maybe(self._alpha, 255)
 
-  @alpha.setter
+  @alpha.SET
   def setAlpha(self, newAlpha: int) -> None:
     """Setter-function for alpha color"""
     self._alpha = newAlpha
 
-  @redKeys.getter
+  @redKeys.GET
   def getRedKeys(self, *_) -> list[str]:
     """Getter-function for red keys"""
     keys = self.stringList("""red, Red, RED, r, R""")
     return [k for k in keys if isinstance(k, str)]
 
-  @greenKeys.getter
+  @greenKeys.GET
   def getGreenKeys(self, *_) -> list[str]:
     """Getter-function for red keys"""
     keys = self.stringList("""green, Green, GREEN, g, G""")
     return [k for k in keys if isinstance(k, str)]
 
-  @blueKeys.getter
+  @blueKeys.GET
   def getBlueKeys(self, *_) -> list[str]:
     """Getter-function for red keys"""
     keys = self.stringList("""blue, Blue, BLUE, b, B""")
     return [k for k in keys if isinstance(k, str)]
 
-  @alphaKeys.getter
+  @alphaKeys.GET
   def getAlphaKeys(self, *_) -> list[str]:
     """Getter-function for red keys"""
     keys = self.stringList("""alpha, Alpha, ALPHA, r, R, opacity, Opacity""")
     return [k for k in keys if isinstance(k, str)]
 
-  @colorKeys.getter
+  @colorKeys.GET
   def getColorKeys(self, *_) -> list[str]:
     """Getter-function for color keys"""
     keys = self.stringList("""color, Color, QColor, RGB, rgb""")

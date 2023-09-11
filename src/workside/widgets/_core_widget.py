@@ -66,17 +66,17 @@ class CoreWidget(QWidget, WorkToyClass, ):
     if isinstance(point, QPointF):
       widget.mousePos = point
 
-  @mousePos.getter
+  @mousePos.GET
   def getMousePos(self, *_) -> QPointF:
     """Getter-function for the mouse position."""
     return QPointF(self.mouseX, self.mouseY)
 
-  @mousePos.setter
+  @mousePos.SET
   def setMousePos(self, point: QPointF) -> None:
     """Setter-function for the mouse position"""
     self.mouseX, self.mouseY = point.x(), point.y()
 
-  @alignmentFlags.getter
+  @alignmentFlags.GET
   def getAlignmentFlags(self) -> Qt.AlignmentFlag:
     """Getter-function for alignment flags as defined by the Qt Enum."""
     wrap = Qt.TextFlag.TextWordWrap
@@ -105,18 +105,18 @@ class CoreWidget(QWidget, WorkToyClass, ):
     if isinstance(strArg, str):
       self.text = strArg
 
-  @backgroundStyle.getter
+  @backgroundStyle.GET
   def getBackgroundStyle(self, ) -> BackgroundStyleState:
     """Getter-function for background style"""
     state = 'base' if self.hovered else 'base'
     return BackgroundStyle.getStateStyle(state)
 
-  @text.getter
+  @text.GET
   def getText(self) -> str:
     """LMAO"""
     return ''
 
-  @fontStyle.getter
+  @fontStyle.GET
   def getFontStyle(self) -> FontStyleState:
     """Getter-function for the font style"""
     textStates = self.stringList('legend, paragraph, header, title')

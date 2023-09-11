@@ -44,7 +44,7 @@ class TextLabel(Graphic):
     pen.setWidth(penWidth)
     return pen
 
-  @font.getter
+  @font.GET
   def getFont(self, *args, **kwargs) -> QFont:
     """Getter-function for the font"""
     _font = getattr(self, '_font', None)
@@ -56,7 +56,7 @@ class TextLabel(Graphic):
       return self.getFont(*args, _recursion=True)
     return _font
 
-  @font.setter
+  @font.SET
   def setFont(self, font: QFont) -> None:
     """Setter-function for the font. It does not replace the existing
     variable but instead udpates its values."""
@@ -66,7 +66,7 @@ class TextLabel(Graphic):
     _font.setWeight(font.weight())
     setattr(self, '_font', _font)
 
-  @fontPen.getter
+  @fontPen.GET
   def getFontPen(self, *args, **kwargs) -> QPen:
     """Getter-function for the pen."""
     _fontPen = getattr(self, '_fontPen', None)
@@ -78,7 +78,7 @@ class TextLabel(Graphic):
       return self.getFontPen(*args, _recursion=True)
     return _fontPen
 
-  @fontPen.setter
+  @fontPen.SET
   def setFontPen(self, fontPen: QPen) -> None:
     """Setter-function for the pen used to draw the text."""
     _fontPen = self.getFontPen()
@@ -87,7 +87,7 @@ class TextLabel(Graphic):
     _fontPen.setStyle(fontPen.style())
     setattr(self, '_fontPen', _fontPen)
 
-  @brush.getter
+  @brush.GET
   def getBrush(self, *args) -> QBrush:
     """Getter-function for the brush."""
     brushColor = QColor(127, 255, 0, 255)
