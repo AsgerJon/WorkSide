@@ -68,5 +68,33 @@
     },
     "borderWidth": 2,
     "cornerRadius": 5
+  },
+  "banner": {
+    "fill": {
+      "red": 95,
+      "green": 207,
+      "blue": 0
+    },
+    "border": {
+      "red": 144,
+      "green": 144,
+      "blue": 144
+    },
+    "borderWidth": 2,
+    "cornerRadius": 5
+  },
+  "banner-hover": {
+    "fill": {
+      "red": 144,
+      "green": 255,
+      "blue": 0
+    },
+    "border": {
+      "red": 91,
+      "green": 91,
+      "blue": 0
+    },
+    "borderWidth": 2,
+    "cornerRadius": 5
   }
 }

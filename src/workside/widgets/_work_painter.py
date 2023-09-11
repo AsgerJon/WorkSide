@@ -50,6 +50,12 @@ class WorkPainter(QPainter):
     pen.setWidth(1)
     return pen
 
+  def resetPainter(self) -> WorkPainter:
+    """Resets the styles on the painter"""
+    self.setPen(self.blankPen)
+    self.setBrush(self.blankBrush)
+    return self
+
   def __init__(self, *args, **kwargs) -> None:
     QPainter.__init__(self, *args, **kwargs)
     self._widget = None
@@ -113,11 +119,12 @@ class WorkPainter(QPainter):
       painter = widget.backgroundStyle @ painter
       painter.drawRect(viewRect)
     if widget.drawText:
+      painter.resetPainter()
       textRect = widget.getTextRect()
       textFlags = widget.getAlignmentFlags()
-      ic(textFlags)
       painter = widget.fontStyle @ painter
       painter.drawRoundedRect(textRect, 1, 1)
       painter = widget.fontStyle @ painter
       painter.drawText(textRect, textFlags, widget.text)
       painter.end()
+    del painter

@@ -50,7 +50,7 @@ class CoreWidget(QWidget, WorkToyClass, ):
   mouseY = FloatAttribute(0)
 
   drawBackground = Flag(True)
-  drawText = Flag(False)
+  drawText = Flag(True)
 
   @classmethod
   def handleStateChange(cls, widget: QWidget, ) -> None:
@@ -87,7 +87,8 @@ class CoreWidget(QWidget, WorkToyClass, ):
     hCenter = Qt.AlignmentFlag.AlignHCenter
     vCenter = Qt.AlignmentFlag.AlignVCenter
     justify = Qt.AlignmentFlag.AlignJustify
-    return wrap | right | bottom
+    out = wrap | right | bottom
+    return out
 
   def getViewRect(self) -> QRect:
     """Getter-function for the rectangle holding the viewport. """
@@ -107,8 +108,13 @@ class CoreWidget(QWidget, WorkToyClass, ):
   @backgroundStyle.getter
   def getBackgroundStyle(self, ) -> BackgroundStyleState:
     """Getter-function for background style"""
-    state = 'hover' if self.hovered else 'base'
+    state = 'base' if self.hovered else 'base'
     return BackgroundStyle.getStateStyle(state)
+
+  @text.getter
+  def getText(self) -> str:
+    """LMAO"""
+    return ''
 
   @fontStyle.getter
   def getFontStyle(self) -> FontStyleState:
@@ -137,8 +143,6 @@ class CoreWidget(QWidget, WorkToyClass, ):
   def event(self, event: QEvent) -> bool:
     """Takes 'enter', 'leave' and 'move' events to update the hovered
     flag."""
-    self.hAlign = 1
-    self.vAlign = 1
     if event.type() == QEvent.Type.Leave:
       self.hovered = False
       self.leave.emit(self, )

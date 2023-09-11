@@ -1,13 +1,13 @@
 """WorkToy - Window - LayoutWindow
 This class is responsible for painting the window. """
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
 from PySide6.QtCore import QSize
-from PySide6.QtWidgets import QGridLayout
+from PySide6.QtWidgets import QGridLayout, QWidget
 
-from workside.widgets import CoreWidget, Banner
+from workside.widgets import StyledToggle
 from workside.window import BaseWindow
 
 
@@ -19,26 +19,13 @@ class LayoutWindow(BaseWindow):
     BaseWindow.__init__(self, *args, **kwargs)
     self.setMinimumSize(QSize(480, 320))
     self._baseLayout = QGridLayout()
-    self._baseWidget = CoreWidget()
-    self._topLeft = Banner(True, True, )
-    self._topRight = Banner(True, True, )
-    self._bottomRight = Banner(True, True, )
-    self._bottomLeft = Banner(True, True, )
-    self._left = Banner(True, False)
-    self._right = Banner(True, False)
-    self._top = Banner(False, True)
-    self._bottom = Banner(False, True)
+    self._baseWidget = QWidget()
+    self._canvas = StyledToggle()
 
   def setupWidgets(self) -> None:
     """Sets up widgets"""
-    self._baseLayout.addWidget(self._topLeft, 0, 0)
-    self._baseLayout.addWidget(self._topRight, 0, 2)
-    self._baseLayout.addWidget(self._bottomRight, 2, 2)
-    self._baseLayout.addWidget(self._bottomLeft, 2, 0)
-    self._baseLayout.addWidget(self._left, 1, 0)
-    self._baseLayout.addWidget(self._right, 1, 2)
-    self._baseLayout.addWidget(self._top, 0, 1)
-    self._baseLayout.addWidget(self._bottom, 2, 1)
+
+    self._baseLayout.addWidget(self._canvas, 0, 0)
     self._baseWidget.setLayout(self._baseLayout)
     self.setCentralWidget(self._baseWidget)
 

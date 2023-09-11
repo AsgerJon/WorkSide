@@ -4,15 +4,9 @@ Implementing text labels on the paint event."""
 #  MIT Licence
 from __future__ import annotations
 
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QPen, QFont, QBrush, QPaintEvent
+from PySide6.QtGui import QPaintEvent
 
-from workside.draw import labelFontPen, subHeaderFontPen, headerFontPen
-from workside.draw import subHeaderBoxPen, headerBoxPen, labelBoxPen
-from workside.draw import labelFont, headerFont, subHeaderFont
-from workside.draw import labelBrush, headerBrush, subHeaderBrush
 from workside.widgets import CoreWidget
-from worktoy.descriptors import Field, StrAttribute, IntAttribute
 
 
 class TextWidget(CoreWidget):

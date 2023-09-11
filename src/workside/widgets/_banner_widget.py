@@ -4,14 +4,22 @@ Constant colored banner widgets"""
 #  MIT Licence
 from __future__ import annotations
 
-from PySide6.QtGui import QPaintEvent
+from PySide6.QtCore import Qt
+from worktoy.descriptors import Field, Flag
 
-from workside.widgets import CoreWidget, WorkPainter
+from workside.draw import BackgroundStyleState, BackgroundStyle
+from workside.widgets import CoreWidget
 
 
 class Banner(CoreWidget):
   """WorkSide - Widgets - Banner
   Constant colored banner widgets"""
+
+  #
+  # drawBackground = Flag(True)
+  # drawText = Flag(True)
+  #
+  # backgroundStyle = Field()
 
   def __init__(self, vertical: bool = None, horizontal: bool = None,
                *args, **kwargs) -> None:
@@ -29,3 +37,13 @@ class Banner(CoreWidget):
   def __repr__(self) -> str:
     """Code representation"""
     return self.__class__.__qualname__
+
+  def getAlignmentFlags(self) -> Qt.AlignmentFlag:
+    """Getter-function for the alignment flags."""
+    return Qt.AlignmentFlag.AlignCenter
+  #
+  # @backgroundStyle.getter
+  # def getBackgroundStyle(self, ) -> BackgroundStyleState:
+  #   """Getter-function for background style"""
+  #   state = 'banner-hover' if self.hovered else 'banner'
+  #   return BackgroundStyle.getStateStyle(state)
