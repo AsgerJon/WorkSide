@@ -12,7 +12,7 @@ from icecream import ic
 from worktoy.descriptors import Field, IntAttribute, StrAttribute, Flag
 from worktoy.worktoyclass import WorkToyClass
 
-from workside.draw import Color
+from workside.tools import Color
 
 ic.configureOutput(includeContext=True)
 

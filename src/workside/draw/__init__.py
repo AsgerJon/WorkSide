@@ -8,7 +8,6 @@ from ._label_font import labelFontPen, labelFont, labelBrush, labelBoxPen
 from ._label_font import headerFontPen, headerFont, headerBrush, headerBoxPen
 from ._label_font import subHeaderFontPen, subHeaderFont
 from ._label_font import subHeaderBrush, subHeaderBoxPen
-from ._color import Color
 from ._graphic import Graphic
 from ._text_label import TextLabel
 from ._background_style_state import BackgroundStyleState

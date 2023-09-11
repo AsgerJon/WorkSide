@@ -12,7 +12,7 @@ from PySide6.QtGui import QColor, QPen, QBrush
 from worktoy.descriptors import IntAttribute, Field
 from worktoy.worktoyclass import WorkToyClass
 
-from workside.draw import Color
+from workside.tools import Color
 
 
 class BackgroundStyleState(WorkToyClass):

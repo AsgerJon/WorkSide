@@ -5,6 +5,7 @@ can extend this behaviour as needed."""
 #  MIT Licence
 from __future__ import annotations
 
+import json
 from typing import Optional, Any
 
 from PySide6.QtGui import QColor, QPen, QBrush
@@ -155,120 +156,108 @@ class Color(AbstractTools):
     H = self.stringList('0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F')
     return '%s%s' % (H[int(uint8 // 16)], H[int(uint8 % 16)])
 
-  def _floatArgParse(self, *args) -> NumColor:
-    """Parses float valued positional arguments"""
-    floatArgs = self.maybeTypes(float, *args)
-    intArgs = []
-    for arg in floatArgs:
-      if 0 <= arg <= 1:
-        intArgs.append(int(255 * arg))
-    if len(intArgs) > 2:
-      red, green, blue = intArgs[:3]
-      alpha = 255
-      if len(intArgs) > 3:
-        alpha = intArgs[3]
+  def _parseNumKwarg(self, ) -> NumColor:
+    """Parses keyword arguments"""
+    kwarg = dict(red=None, green=None, blue=None, alpha=255)
+    _temp = []
+    keys = [self.redKeys, self.greenKeys, self.blueKeys, self.alphaKeys]
+    names = self.stringList('red, green, blue, alpha')
+    for kw, color in zip(keys, names):
+      for name in kw:
+        for key, val in self.getKeywordArgs().items():
+          if name == key and kwarg[color] is None:
+            if isinstance(val, int):
+              if -1 < val < 256:
+                kwarg[color] = val
+                _temp.append((key, val))
+            elif isinstance(val, float):
+              if 1 < val < 256:
+                kwarg[color] = int(val)
+                _temp.append((key, val))
+              if 0 <= val <= 1:
+                kwarg[color] = int(255 * val)
+                _temp.append((key, val))
+    if all([kwarg[key] is not None for key in names]):
+      colors = []
+      for key, val in kwarg.items():
+        self.useArg(key)
+        if isinstance(val, int):
+          colors.append(val)
+      red, green, blue, alpha = colors
       return red, green, blue, alpha
 
-  def _intArgParse(self, *args) -> NumColor:
+  def _parseNumArg(self, ) -> NumColor:
     """Parses positional arguments"""
-    intArgs = self.maybeTypes(int, *args)
-    intArgs = [i for i in intArgs if -1 < i < 256]
-    intArgs = [i for i in intArgs if isinstance(i, int)]
-    if len(intArgs) > 2:
-      red, green, blue = intArgs[:3]
-      alpha = 255
-      if len(intArgs) > 3:
-        alpha = intArgs[3]
-      if all([i in [0, 1] for i in [red, green, blue]]):
-        red *= 255
-        green *= 255
-        blue *= 255
-        if alpha == 1:
-          alpha = 255
+    intArgs = []
+    unitArgs = []
+    _temp = []
+    for key, val in self.getPosArgs().items():
+      if isinstance(val, int):
+        if -1 < val < 256:
+          intArgs.append(val)
+          if val in [0, 1]:
+            unitArgs.append(val)
+          _temp.append((key, val))
+      elif isinstance(val, float):
+        if 1 < val < 256:
+          intArgs.append(int(val))
+          _temp.append((key, val))
+        if 0 <= val <= 1:
+          intArgs.append(int(255 * val))
+          unitArgs.append(val)
+          _temp.append((key, val))
+    if len(intArgs) == 3:
+      if len(unitArgs) == 3:
+        unitArgs.append(1)
+        intArgs = [255 * i for i in unitArgs]
+      else:
+        intArgs.append(255)
+      red, green, blue, alpha = intArgs
+      self.useArgs(_temp)
+      return red, green, blue, alpha
+    if len(intArgs) > 3:
+      if len(unitArgs) > 3:
+        intArgs = [255 * i for i in unitArgs[:4]]
+      red, green, blue, alpha = intArgs[:4]
+      self.useArgs(_temp)
       return red, green, blue, alpha
 
-  def _intKwargParse(self, **kwargs) -> NumColor:
-    """Parses keyword arguments"""
-    redKwarg = self.searchKey(int, *self.redKeys, **kwargs)
-    greenKwarg = self.searchKey(int, *self.greenKeys, **kwargs)
-    blueKwarg = self.searchKey(int, *self.blueKeys, **kwargs)
-    alphaKwarg = self.searchKey(int, *self.alphaKeys, **kwargs)
-    if all([arg is not None for arg in [redKwarg, greenKwarg, blueKwarg]]):
-      return redKwarg, greenKwarg, blueKwarg, self.maybe(alphaKwarg, 255)
+  def _parseColorKwarg(self) -> NumColor:
+    """Parses keyword arguments for instances of Color or QColor"""
+    for name in self.colorKeys:
+      col = self.getKeywordArgs().get(name, None)
+      if isinstance(col, Color):
+        self.useArg(name)
+        return col.red, col.green, col.blue, col.alpha
+      if isinstance(col, QColor):
+        self.useArg(name)
+        return col.red(), col.green(), col.blue(), col.alpha()
 
-  def _floatKwargParse(self, **kwargs) -> NumColor:
-    """Parses keyword arguments"""
-    redKwarg = self.searchKey(float, *self.redKeys, **kwargs)
-    greenKwarg = self.searchKey(float, *self.greenKeys, **kwargs)
-    blueKwarg = self.searchKey(float, *self.blueKeys, **kwargs)
-    alphaKwarg = self.searchKey(int, *self.alphaKeys, **kwargs)
-    floatArgs = [redKwarg, greenKwarg, blueKwarg]
-    if all([i is not None for i in floatArgs]):
-      intArgs = []
-      for arg in floatArgs:
-        if 0 <= arg <= 1:
-          intArgs.append(int(arg * 255))
-        elif 0 < int(arg) < 256:
-          intArgs.append(int(arg))
-        else:
-          return
-      if len(intArgs) > 2:
-        red, green, blue = intArgs[:3]
-        alpha = self.maybe(alphaKwarg, 255)
-        if len(intArgs) > 3:
-          alpha = intArgs[3]
-        return red, green, blue, alpha
-
-  def _parseNumeric(self, *args, **kwargs, ) -> dict[str, int]:
-    intKwargs = self._intKwargParse(**kwargs)
-    floatKwargs = self._floatKwargParse(**kwargs)
-    intArgs = self._intArgParse(*args)
-    floatArgs = self._floatArgParse(*args)
-    dictIntArg = None
-    dictFloatArg = None
-    listIntArg = None
-    listFloatArg = None
-    dictArg = self.maybeType(dict, *args)
-    listArg = self.maybeType(list, *args)
-    if isinstance(dictArg, dict):
-      dictIntArg = self._intKwargParse(**kwargs)
-      dictFloatArg = self._floatKwargParse(**kwargs)
-    if isinstance(listArg, list):
-      listIntArg = self._intArgParse(*args)
-      listFloatArg = self._floatArgParse(*args)
-    rgbArgs = [intKwargs, floatKwargs, intArgs, floatArgs,
-               dictIntArg, dictFloatArg, listIntArg, listFloatArg]
-    numColor = self.maybe(*rgbArgs)
-    if numColor is not None:
-      r, g, b, a = numColor
-      return dict(red=r, green=g, blue=b, alpha=a)
+  def _parseColorArg(self, ) -> NumColor:
+    """Parses positional arguments for instances of Color or QColor"""
+    for (key, col) in self.getPosArgs().items():
+      if isinstance(col, Color):
+        self.useArg(key)
+        return col.red, col.green, col.blue, col.alpha
+      if isinstance(col, QColor):
+        self.useArg(key)
+        return col.red(), col.green(), col.blue(), col.alpha()
 
   def __init__(self, *args, **kwargs) -> None:
     AbstractTools.__init__(self, *args, **kwargs)
-    self._red, self._green, self._blue, self._alpha = 0, 0, 0, 255
-    numColor = self._parseNumeric(*args, **kwargs)
-    if isinstance(numColor, dict):
-      self.red = numColor.get('red', None)
-      self.blue = numColor.get('blue', None)
-      self.green = numColor.get('green', None)
-      self.alpha = numColor.get('alpha', None)
+    parsers = [
+      self._parseColorKwarg,
+      self._parseColorArg,
+      self._parseNumKwarg,
+      self._parseNumArg,
+    ]
+    rgba = None
+    for parser in parsers:
+      if rgba is None:
+        rgba = parser()
 
-    argColor = self.maybeType(Color, *args)
-    argQColor = self.maybeType(QColor, *args)
-    colorKwarg = self.searchKeys(*self.colorKeys, **kwargs)
-    colorArg = self.maybe(colorKwarg, argColor, argQColor)
-
-    if isinstance(colorArg, QColor):
-      self.red = colorArg.red()
-      self.blue = colorArg.blue()
-      self.green = colorArg.green()
-      self.alpha = colorArg.alpha()
-
-    if isinstance(colorArg, Color):
-      self.red = colorArg.red
-      self.green = colorArg.green
-      self.blue = colorArg.blue
-      self.alpha = colorArg.alpha
+    rgba = self.maybe(rgba, (0, 0, 0, 255))
+    self.red, self.green, self.blue, self.alpha = rgba
 
   def toolSupport(self, tool: type) -> bool:
     """QBrush, QPen and QColor is supported. In the case of QColor,
@@ -342,3 +331,16 @@ class Color(AbstractTools):
     d2green = 4 * dGreen ** 2
     d2blue = (3 - redMean) * dBlue ** 2
     return (d2red + d2green + d2blue) ** 0.5
+
+  @classmethod
+  def saveToJson(cls, instance: Color = None) -> str:
+    """Implementation."""
+    data = dict(red=instance.red, green=instance.green,
+                blue=instance.blue, alpha=instance.alpha)
+    return json.dumps(data)
+
+  @classmethod
+  def loadToJson(cls, data: str) -> Color:
+    """Implementation"""
+    rgb = json.loads(data)
+    return cls(rgb['red'], rgb['green'], rgb['blue'], rgb['alpha'])
