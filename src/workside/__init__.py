@@ -4,6 +4,6 @@ module"""
 #  MIT Licence
 from __future__ import annotations
 
-import workside.tools as tools
+# import workside.tools as tools
 import workside.widgets as widgets
 import workside.window as window

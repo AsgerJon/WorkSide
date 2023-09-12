@@ -1,0 +1,25 @@
+{
+  "fontFamily": "Consolas",
+  "fontSize": 16,
+  "fontWeight": "Normal",
+  "fontColor": {
+    "red": 0,
+    "green": 0,
+    "blue": 0
+  },
+  "backgroundColor": {
+    "red": 191,
+    "green": 191,
+    "blue": 191
+  },
+  "borderColor": {
+    "red": 255,
+    "green": 0,
+    "blue": 127
+  },
+  "borderWidth": 2,
+  "cornerRadiusX": 4,
+  "cornerRadiusY": 4,
+  "verticalAlignment": 128,
+  "horizontalAlignment": 4
+}

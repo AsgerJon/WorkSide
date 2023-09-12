@@ -5,9 +5,10 @@ This class is responsible for painting the window. """
 from __future__ import annotations
 
 from PySide6.QtCore import QSize
-from PySide6.QtWidgets import QGridLayout, QWidget
+from PySide6.QtWidgets import QGridLayout, QWidget, QLabel
 
-from workside.widgets import StyledToggle
+from workside.widgets import LabelWidget
+# from workside.widgets import StyledToggle
 from workside.window import BaseWindow
 
 
@@ -20,7 +21,7 @@ class LayoutWindow(BaseWindow):
     self.setMinimumSize(QSize(480, 320))
     self._baseLayout = QGridLayout()
     self._baseWidget = QWidget()
-    self._canvas = StyledToggle()
+    self._canvas = LabelWidget()
 
   def setupWidgets(self) -> None:
     """Sets up widgets"""
