@@ -5,7 +5,7 @@ Class representation of painting tools."""
 from __future__ import annotations
 
 from ._color_spec import ColorSpec
-from ._color import Color
+from ._color2 import Color
 from ._font_size import FontSize
 from ._font_family import FontFamily
 from ._font_weight import FontWeight

@@ -5,11 +5,13 @@ Dataclass specification for colors"""
 from __future__ import annotations
 
 import json
+from typing import Any
 
 from icecream import ic
+from worktoy.descriptors import DataClass, DataField
 from worktoy.worktoyclass import WorkToyClass
 
-from workside.moreworktoy import DataField, DataClass
+from workside.moreworktoy import CoreField, AutoField
 
 ic.configureOutput(includeContext=True)
 
@@ -18,98 +20,71 @@ ic.configureOutput(includeContext=True)
 class ColorSpec(WorkToyClass):
   """WorkSide - Paint - ColorSpec
   Dataclass specification for colors"""
-  red = DataField()
-  green = DataField()
-  blue = DataField()
-  alpha = DataField()
 
-  @red.GET
-  def getRed(self, ) -> int:
-    """Getter-function for red"""
-    return self._red
+  @classmethod
+  def ORANGE(cls) -> ColorSpec:
+    """Standard color"""
+    return cls(255, 144, 0, 255)
 
-  @red.SET
-  def setRed(self, newValue: int) -> None:
-    """Getter-function for red"""
-    self._red = newValue
+  @classmethod
+  def MINT(cls) -> ColorSpec:
+    """Standard color"""
+    return cls(0, 255, 144, 255)
 
-  @red.ENCODER
-  def encoderRed(self, ) -> str:
-    """Encoder-function for red"""
-    return json.dumps(self.red)
+  @classmethod
+  def PURPLE(cls) -> ColorSpec:
+    """Standard color"""
+    return cls(144, 0, 255, 255)
 
-  @red.DECODER
-  def decoderRed(self, data: str) -> int:
-    """Decoder-function for red"""
-    value = json.loads(data).get('red', '0')
-    if isinstance(value, str):
-      return int(value)
+  @classmethod
+  def LIME(cls) -> ColorSpec:
+    """Standard color"""
+    return cls(144, 255, 0, 255)
 
-  @green.GET
-  def getGreen(self, ) -> int:
-    """Getter-function for green"""
-    return self._green
+  @classmethod
+  def ROYALBLUE(cls) -> ColorSpec:
+    """Standard color"""
+    return cls(0, 144, 255, 255)
 
-  @green.SET
-  def setGreen(self, newValue: int) -> None:
-    """Getter-function for green"""
-    self._green = newValue
+  @classmethod
+  def PINK(cls) -> ColorSpec:
+    """Standard color"""
+    return cls(255, 0, 144, 255)
 
-  @green.ENCODER
-  def encoderGreen(self, ) -> str:
-    """Encoder-function for green"""
-    return json.dumps(self.green)
+  @classmethod
+  def RED(cls) -> ColorSpec:
+    """Standard color"""
+    return cls(255, 0, 0, 255)
 
-  @green.DECODER
-  def decoderGreen(self, data: str) -> int:
-    """Decoder-function for green"""
-    value = json.loads(data).get('green', '0')
-    if isinstance(value, str):
-      return int(value)
+  @classmethod
+  def GREEN(cls) -> ColorSpec:
+    """Standard color"""
+    return cls(0, 255, 0, 255)
 
-  @blue.GET
-  def getBlue(self, ) -> int:
-    """Getter-function for blue"""
-    return self._blue
+  @classmethod
+  def BLUE(cls) -> ColorSpec:
+    """Standard color"""
+    return cls(0, 0, 255, 255)
 
-  @blue.SET
-  def setBlue(self, newValue: int) -> None:
-    """Getter-function for blue"""
-    self._blue = newValue
+  @classmethod
+  def MAGENTA(cls) -> ColorSpec:
+    """Standard color"""
+    return cls(255, 0, 255, 255)
 
-  @blue.ENCODER
-  def encoderGreen(self, ) -> str:
-    """Encoder-function for blue"""
-    return json.dumps(self.blue)
+  @classmethod
+  def CYAN(cls) -> ColorSpec:
+    """Standard color"""
+    return cls(0, 255, 255, 255)
 
-  @blue.DECODER
-  def decoderBlue(self, data: str) -> int:
-    """Decoder-function for blue"""
-    value = json.loads(data).get('blue', '0')
-    if isinstance(value, str):
-      return int(value)
+  @classmethod
+  def YELLOW(cls) -> ColorSpec:
+    """Standard color"""
+    return cls(255, 255, 0, 255)
 
-  @alpha.GET
-  def getAlpha(self, ) -> int:
-    """Getter-function for alpha"""
-    return self._alpha
-
-  @alpha.SET
-  def setAlpha(self, newValue: int) -> None:
-    """Getter-function for alpha"""
-    self._alpha = newValue
-
-  @alpha.ENCODER
-  def encoderAlpha(self, ) -> str:
-    """Encoder-function for alpha"""
-    return json.dumps(self.alpha)
-
-  @alpha.DECODER
-  def decoderAlpha(self, data: str) -> int:
-    """Decoder-function for alpha"""
-    value = json.loads(data).get('alpha', '0')
-    if isinstance(value, str):
-      return int(value)
+  red = CoreField(0)
+  green = CoreField(0)
+  blue = CoreField(0)
+  alpha = CoreField(0)
 
   def __init__(self, *args, **kwargs) -> None:
     WorkToyClass.__init__(self, *args, **kwargs)
@@ -133,15 +108,36 @@ class ColorSpec(WorkToyClass):
     self._blue = self.maybe(blueKwarg, blueArg, blueDefault)
     self._alpha = self.maybe(alphaKwarg, alphaArg, 255)
 
-  def encode(self, ) -> str:
+  def encodeCore(self, ) -> str:
     """Encodes the color to a json string"""
-    return json.dumps(dict(red=self.red, green=self.green, blue=self.blue,
-                           alpha=self.alpha))
+    coreFields = getattr(self.__class__, '__core_fields__', {})
+    out = {}
+    for fieldName, field in coreFields.items():
+      if isinstance(field, CoreField):
+        value = field.encode(self)
+        out |= {fieldName: value}
+    return json.dumps(out)
+
+  def encodeAuto(self) -> str:
+    """Encodes the color to a json string"""
+    autoFields = getattr(self.__class__, '__auto_fields__', {})
+    out = {}
+    for fieldName, field in autoFields.items():
+      if isinstance(field, AutoField):
+        value = field.encodeCore(self)
+        out |= {fieldName: value}
+    return json.dumps(out)
 
   @classmethod
-  def decode(cls, data: str) -> ColorSpec:
+  def decode(cls, encodedData: str) -> ColorSpec:
     """Decodes the json string to an instance of ColorSpec"""
-    return cls(json.loads(data))
+    encodedData = json.loads(encodedData)
+    obj = cls()
+    coreFields = getattr(cls, '__core_fields__', {})
+    for fieldName, data in encodedData.items():
+      field = coreFields.get(fieldName, )
+      field.decode(obj, data)
+    return obj
 
   def hexify(self, uint8: int) -> str:
     """Returns a string representation of the value given in HEX code."""
