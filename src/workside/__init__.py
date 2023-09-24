@@ -1,9 +1,13 @@
-"""The WorkSide module provides convenient simplifications of the PySide6
-module"""
-#  Copyright (c) 2023 Asger Jon Vistisen
+"""WorkSide
+Extension of WorkToy utility package implementing utilities relating to
+PySide6. """
 #  MIT Licence
+#  Copyright (c) 2023 Asger Jon Vistisen
 from __future__ import annotations
 
-# import workside.tools as tools
 import workside.widgets as widgets
-import workside.window as window
+import workside.specialwidgets as specialwidgets
+import workside.windows as windows
+import workside.painters as painters
+import workside.settings as settings
+import workside.stylestates as stylestates

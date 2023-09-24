@@ -1,9 +1,16 @@
 """WorkSide - Widgets
-This module provides the collection of widgets used by the WorkSide
-framework."""
-#  Copyright (c) 2023 Asger Jon Vistisen
+Subclasses of QWidget"""
 #  MIT Licence
+#  Copyright (c) 2023 Asger Jon Vistisen
 from __future__ import annotations
 
-from ._core_widget import CoreWidget
-from ._label_widget import LabelWidget
+from ._abstract_widget_attributes import AbstractWidgetAttributes
+from ._abstract_widget_virtuals import AbstractWidgetVirtuals
+from ._abstract_widget import AbstractWidget
+from ._template import Template
+from ._spacer_widgets import HorizontalSpacer, VerticalSpacer, DoubleSpacer
+from ._test_widget import TestWidget
+from ._text_widget_attributes import TextWidgetAttributes
+from ._text_widget_virtuals import TextWidgetVirtuals
+from ._text_widget import TextWidget
+from ._abstract_button import AbstractButton
