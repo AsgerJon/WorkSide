@@ -52,5 +52,5 @@ def tester02() -> None:
 if __name__ == '__main__':
   print(77 * '_')
   print(time.ctime())
-  tester01()
+  tester02()
   print(77 * '¨')
