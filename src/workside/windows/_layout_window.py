@@ -5,7 +5,7 @@ widgets. """
 #  MIT Licence
 from __future__ import annotations
 
-from PySide6.QtWidgets import QGridLayout, QWidget, QPushButton
+from PySide6.QtWidgets import QGridLayout, QWidget, QPushButton, QVBoxLayout
 from icecream import ic
 
 from workside.widgets import VerticalSpacer, HorizontalSpacer, TextWidget
@@ -21,9 +21,11 @@ class LayoutWindow(BaseWindow):
   def __init__(self, *args, **kwargs) -> None:
     BaseWindow.__init__(self, *args, **kwargs)
     self._baseLayout = QGridLayout()
+    self._innerLayout = QVBoxLayout()
     self._baseWidget = QWidget()
     self._kill = QPushButton('yourself')
-    self._cunt = TextWidget()
+    self._cunt = TextWidget('KILL')
+    self._base = QWidget()
     self.topHSpacer = HorizontalSpacer()
     self.bottomHSpacer = HorizontalSpacer()
     self.leftVSpacer = VerticalSpacer()
@@ -31,10 +33,15 @@ class LayoutWindow(BaseWindow):
 
   def setupWidgets(self) -> None:
     """Sets up the widgets. Add widget is row and then column."""
+    self._innerLayout = QVBoxLayout()
+    self._innerLayout.addWidget(self._kill)
+    self._innerLayout.addWidget(self._cunt)
+    self._base.setLayout(self._innerLayout)
     self._baseLayout.addWidget(self.topHSpacer, 0, 1, 1, 1)
     self._baseLayout.addWidget(self.bottomHSpacer, 2, 1, 1, 1)
     self._baseLayout.addWidget(self.leftVSpacer, 1, 0, 1, 1)
     self._baseLayout.addWidget(self.rightVSpacer, 1, 2, 1, 1)
+    self._baseLayout.addWidget(self._base, 1, 1, 1, 1)
     self._baseWidget.setLayout(self._baseLayout)
     self.setCentralWidget(self._baseWidget)
 
