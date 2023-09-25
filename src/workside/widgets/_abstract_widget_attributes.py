@@ -1,12 +1,15 @@
 """WorkSide - Widgets - AbstractWidgetAttributes
 Class containing attributes on the AbstractWidgetClass"""
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
 from typing import Never
 
+from PySide6.QtCore import QObject
+from PySide6.QtGui import QPaintEvent
 from PySide6.QtWidgets import QWidget
+from icecream import ic
 
 from worktoy.descriptors import Attribute
 from worktoy.worktoyclass import WorkToyClass
@@ -411,3 +414,9 @@ have getters and setters, but not deleter functions. """
     self.__margin_bottom__ = 0
     parent = self.maybeType(QWidget, *args)
     QWidget.__init__(self, parent)
+    self.setMouseTracking(True)
+    ic(isinstance(self, QObject))
+
+  def paintEvent(self, event: QPaintEvent) -> None:
+    """Adds state dependent fill to the inner rectangle."""
+    QWidget.paintEvent(self, event)

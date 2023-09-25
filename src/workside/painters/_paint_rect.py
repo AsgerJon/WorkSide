@@ -1,14 +1,19 @@
 """WorkSide - Painters - PaintRect
 Primitive painting on rectangles."""
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
 from PySide6.QtCore import QRectF, QRect, QMargins
 from icecream import ic
+from typing import TYPE_CHECKING
 
 from workside.painters import AbstractPainter
-from workside.widgets import AbstractWidget
+
+if TYPE_CHECKING:
+  from workside.widgets import AbstractWidget
+else:
+  from PySide6.QtWidgets import QWidget as AbstractWidget
 
 ic.configureOutput(includeContext=True)
 

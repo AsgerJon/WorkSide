@@ -10,7 +10,7 @@ from worktoy.worktoyclass import WorkToyClass
 from moreworktoy.texttools import maxLineLen
 
 
-class FieldInstanceHeader(WorkToyClass):
+class CharLine(WorkToyClass):
   """Header"""
 
   @staticmethod
@@ -36,8 +36,28 @@ class FieldInstanceHeader(WorkToyClass):
   innerLen = Attribute()
   outerLen = Attribute(maxLineLen)
   fillSpace = Attribute()
+  left = Attribute()
+  right = Attribute()
 
   currentText = Attribute()
+
+  @right.GET
+  def getRight(self) -> str:
+    """Getter-function for left part side"""
+    margin = self.rightMargin
+    fill = self.rightFill
+    border = self.rightBorder
+    pad = self.rightPad
+    return '%s%s%s%s' % (margin, fill, border, pad)
+
+  @left.GET
+  def getLeft(self) -> str:
+    """Getter-function for left part side"""
+    margin = self.leftMargin
+    fill = self.leftFill
+    border = self.leftBorder
+    pad = self.leftPad
+    return '%s%s%s%s' % (margin, fill, border, pad)
 
   @fillSpace.GET
   def getFillSpace(self) -> int:
@@ -55,6 +75,13 @@ class FieldInstanceHeader(WorkToyClass):
     """Getter-function for fill on the left"""
     return self.roundRight(self.fillSpace) * self.rightFillChar
 
+  def getCenterLine(self) -> str:
+    """Getter-function for center line"""
+    return '%s%s%s' % (self.left, self.currentText, self.right)
+
+  def getTopLine(self) -> str:
+    """Getter-function for top line"""
+
   def __init__(self, *args, **kwargs) -> None:
     WorkToyClass.__init__(self, *args, **kwargs)
 
@@ -62,4 +89,4 @@ class FieldInstanceHeader(WorkToyClass):
     self.currentText = self.maybe(_text, 'LMAO')
 
   def __str__(self) -> str:
-    return '%s%s%s'
+    return

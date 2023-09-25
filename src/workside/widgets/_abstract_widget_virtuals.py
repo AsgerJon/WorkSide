@@ -4,13 +4,15 @@ Class containing virtual attributes on the AbstractWidgetClass.
 A virtual attribute refers to a function value on more than one 'real'
 attribute.
 """
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
 from typing import Never
 
 from PySide6.QtCore import QPoint, QSize, QRect
+from PySide6.QtGui import QPaintEvent
+
 from workside.widgets import AbstractWidgetAttributes
 from worktoy.descriptors import Attribute
 
@@ -1317,3 +1319,11 @@ attribute. """
     raise ProtectedAttributeError(attName, insName, clsName)
 
   # | _________________________________________________________________ | #
+
+  def __init__(self, *args, **kwargs) -> None:
+    AbstractWidgetAttributes.__init__(self, *args, **kwargs)
+    self.setMouseTracking(True)
+
+  def paintEvent(self, event: QPaintEvent) -> None:
+    """Adds state dependent fill to the inner rectangle."""
+    AbstractWidgetAttributes.paintEvent(self, event)

@@ -1,13 +1,13 @@
 """WorkSide - Widgets - TextWidgetVirtuals
 Virtual class for TextWidget class. """
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
 from typing import Never
 
 from PySide6.QtCore import QRect, QSize
-from PySide6.QtGui import QFont, QPen, QFontMetrics, QFontInfo
+from PySide6.QtGui import QFont, QPen, QFontMetrics, QFontInfo, QPaintEvent
 from icecream import ic
 
 from workside.settings import Line, AbsSpacing, getBasePen
@@ -197,9 +197,14 @@ class TextWidgetVirtuals(TextWidgetAttributes):
   # | _________________________________________________________________ | #
   def __init__(self, *args, **kwargs) -> None:
     TextWidgetAttributes.__init__(self, *args, **kwargs)
+    self.setMouseTracking(True)
     self.__text_font__ = QFont()
     self.__text_font_info__ = QFontInfo(QFont())
     self.__metrics__ = QFontMetrics(QFont())
     self.__bound_size__ = QSize()
     self.__bound_rect__ = QRect()
     self.__font_pen__ = QPen()
+
+  def paintEvent(self, event: QPaintEvent) -> None:
+    """Adds state dependent fill to the inner rectangle."""
+    TextWidgetAttributes.paintEvent(self, event)

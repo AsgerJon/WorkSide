@@ -1,19 +1,15 @@
 """WorkSide - Painters - PrintText
 Prints text on the paint device."""
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from PySide6.QtCore import Qt, QMargins
-from PySide6.QtGui import QFont, QBrush, QColor, QPen
-from icecream import ic
+from PySide6.QtCore import Qt
 
 from workside.painters import AbstractPainter
-from workside.settings import blankBrush, Fill, Line, Black, getBaseBrush, \
-  Platinum
-from worktoy.settings import AlignCenter, AlignLeft, AlignTop
+from workside.settings import blankBrush, getBaseBrush, Platinum
 
 if TYPE_CHECKING:
   from workside.widgets import TextWidget

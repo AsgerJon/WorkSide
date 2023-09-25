@@ -8,16 +8,13 @@ import sys
 import time
 from typing import NoReturn, Never, Any
 
-from PySide6.QtCore import QRect, QRectF, QPointF
 from PySide6.QtWidgets import QApplication
 from icecream import ic
 from pyperclip import copy
-from worktoy.descriptors import AttributeClass
+from moreworktoy.descriptors import AttributeClass
 from worktoy.worktoyclass import WorkToyClass
 
-from moreworktoy import FieldClass
-from workside.settings import Mouse, NoBtn
-from workside.widgets import AbstractWidget
+from workside.widgets import AbstractButtonTimer
 from workside.windows import MainWindow
 
 
@@ -38,29 +35,31 @@ def tester01() -> None:
   """LMAO"""
   fuck = WorkToyClass()
 
-  documentation = fuck.stringList("""Defines the area of the widget 
+  documentation = fuck.monoSpace("""Defines the area of the widget 
   considered by the mouse""")
-  cunt = FieldClass('AbstractMouseRegion', documentation,
-                    parent=AbstractWidget)
+  cunt = AttributeClass()
+  cunt.setCls('AbstractMouseRegionProperties')
+  cunt.setDoc(documentation)
+  cunt.setParent(AbstractButtonTimer)
 
-  cunt.addField('mousePoint', 'QPointF()', 2)
-  cunt.addField('underMouse', 'False', 2)
+  cunt.addAttribute('mousePoint', 'QPointF(0, 0)', 'QPointF()')
+  cunt.addAttribute('underMouse', 'False', 'bool')
 
-  cunt.addField('mousePX', 0, 2)
-  cunt.addField('mousePY', 0, 2)
-  cunt.addField('mouseVX', 0, 2)
-  cunt.addField('mouseVY', 0, 2)
-  cunt.addField('mouseAX', 0, 2)
-  cunt.addField('mouseAY', 0, 2)
+  cunt.addAttribute('mousePX', '0.0', 'float')
+  cunt.addAttribute('mousePY', '0.0', 'float')
+  cunt.addAttribute('mouseVX', '0.0', 'float')
+  cunt.addAttribute('mouseVY', '0.0', 'float')
+  cunt.addAttribute('mouseAX', '0.0', 'float')
+  cunt.addAttribute('mouseAY', '0.0', 'float')
 
-  cunt.addField('mouseState', 'NoBtn', 2)
-  cunt.addField('mouseRegion', 'QRectF()', 2)
-  cunt.addField('mouseLeft', 0, 2)
-  cunt.addField('mouseTop', 0, 2)
-  cunt.addField('mouseRight', 0, 2)
-  cunt.addField('mouseBottom', 0, 2)
+  cunt.addAttribute('mouseState', 'NoBtn', 'Mouse')
+  cunt.addAttribute('mouseRegion', 'QRectF()', 'QRectF')
+  cunt.addAttribute('mouseLeft', '0', 'float', )
+  cunt.addAttribute('mouseTop', '0', 'float', )
+  cunt.addAttribute('mouseRight', '0', 'float', )
+  cunt.addAttribute('mouseBottom', '0', 'float', )
 
-  copy(cunt.buildClass())
+  copy(cunt.buildCode())
 
 
 def tester02() -> None:
@@ -75,5 +74,5 @@ def tester02() -> None:
 if __name__ == '__main__':
   print(77 * '_')
   print(time.ctime())
-  tester01()
+  tester02()
   print(77 * '¨')

@@ -1,18 +1,22 @@
 """WorkSide - Painters - AbstractPainter
 Base class for the custom painters"""
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
 from abc import abstractmethod
 
-from PySide6.QtCore import Qt
+from typing import TYPE_CHECKING
 from PySide6.QtGui import QPainter, QBrush, QPen, QFont
+
 from icecream import ic
 
 from workside.painters import AbstractPainterProperties
-from workside.widgets import AbstractWidget
-from worktoy.descriptors import Attribute
+
+if TYPE_CHECKING:
+  from workside.widgets import AbstractWidget
+else:
+  from PySide6.QtWidgets import QWidget as AbstractWidget
 
 ic.configureOutput(includeContext=True)
 

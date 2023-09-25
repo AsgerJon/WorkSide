@@ -1,13 +1,13 @@
 """WorkSide - Widgets - AbstractWidget
 Provides the abstract base class for the widget classes"""
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
 from typing import Any, Never
 
 from PySide6.QtCore import QMargins, QRect, QPoint
-from PySide6.QtGui import QResizeEvent
+from PySide6.QtGui import QResizeEvent, QPaintEvent
 from PySide6.QtWidgets import QSizePolicy
 from icecream import ic
 
@@ -28,6 +28,7 @@ class AbstractWidget(AbstractWidgetVirtuals):
 
   def __init__(self, *args, **kwargs) -> None:
     AbstractWidgetVirtuals.__init__(self, *args, **kwargs)
+    self.setMouseTracking(True)
     minRect = self.outerRect + QMargins(2, 2, 2, 2)
     self.alignment = AlignCenter
     self.setMinimumSize(minRect.size())
@@ -62,3 +63,7 @@ class AbstractWidget(AbstractWidgetVirtuals):
     minRect = self.outerRect + QMargins(2, 2, 2, 2)
     self.setMinimumSize(minRect.size())
     self.update()
+
+  def paintEvent(self, event: QPaintEvent) -> None:
+    """Adds state dependent fill to the inner rectangle."""
+    AbstractWidgetVirtuals.paintEvent(self, event)

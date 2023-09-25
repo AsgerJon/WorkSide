@@ -14,4 +14,6 @@ from ._text_widget_attributes import TextWidgetAttributes
 from ._text_widget_virtuals import TextWidgetVirtuals
 from ._text_widget import TextWidget
 from ._abstract_button_timer import AbstractButtonTimer
+from ._abstract_mouse_region_properties import AbstractMouseRegionProperties
+from ._abstract_mouse_region import AbstractMouseRegion
 from ._abstract_button import AbstractButton

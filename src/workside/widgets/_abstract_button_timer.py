@@ -5,25 +5,25 @@ Class providing the timers for use by the buttons"""
 from __future__ import annotations
 
 from PySide6.QtCore import Signal
-from PySide6.QtCore import QObject
+from PySide6.QtGui import QPaintEvent
 from icecream import ic
 from worktoy.descriptors import Attribute
 
+from workside.painters import FillBackground
 from workside.settings import WaitForSingleReleaseLimit
 from workside.settings import NoBtn, Mouse
 from workside.settings import WaitForDoubleCLickLimit
 from workside.settings import WaitForSingleHoldLimit
 from workside.settings import WaitForDoubleReleaseLimit
 from workside.settings import WaitForDoubleHoldLimit
-from workside.settings import WaitForTripleReleaseLimit
 from workside.settings import WaitForTripleClickLimit
 from workside.timer import Timer
-from workside.widgets import AbstractWidget
+from workside.widgets import TextWidget
 
 ic.configureOutput(includeContext=True)
 
 
-class AbstractButtonTimer(AbstractWidget):
+class AbstractButtonTimer(TextWidget):
   """Class providing the timers for use by the buttons."""
 
   activeButton = Attribute(NoBtn)
@@ -35,27 +35,24 @@ class AbstractButtonTimer(AbstractWidget):
   doublePressHold = Signal(Mouse)
 
   def __init__(self, *args, **kwargs) -> None:
-    AbstractWidget.__init__(self, *args, **kwargs)
-    if isinstance(self, QObject):
-      self._waitForSingleClick = Timer(  # Fake timer
-        self, -1, 'Wait for Single Click')
-      self._waitForSingleRelease = Timer(
-        self, WaitForSingleReleaseLimit, 'Wait for Single Release')
-      self._waitForDoubleClick = Timer(
-        self, WaitForDoubleCLickLimit, 'Wait for Double Click')
-      self._waitForSingleHold = Timer(
-        self, WaitForSingleHoldLimit, 'Wait for Single Hold')
-      self._waitForDoubleRelease = Timer(
-        self, WaitForDoubleReleaseLimit, 'Wait for Double Release')
-      self._waitForDoubleHold = Timer(
-        self, WaitForDoubleHoldLimit, 'Wait for Double Hold')
-      self._waitForTripleClick = Timer(
-        self, WaitForTripleClickLimit, 'Wait for Triple Click')
-      self._waitForTripleRelease = Timer(
-        self, WaitForTripleReleaseLimit, 'Wait for Triple Release')
-      self._mouseMove = Timer(self, 1000)
-    else:
-      raise TypeError
+    self.__ready__ = False
+    TextWidget.__init__(self, *args, **kwargs)
+    self.setMouseTracking(True)
+    self._waitForSingleClick = Timer(  # Fake timer
+      self, -1, 'Wait for Single Click')
+    self._waitForSingleRelease = Timer(
+      self, WaitForSingleReleaseLimit, 'Wait for Single Release')
+    self._waitForDoubleClick = Timer(
+      self, WaitForDoubleCLickLimit, 'Wait for Double Click')
+    self._waitForSingleHold = Timer(
+      self, WaitForSingleHoldLimit, 'Wait for Single Hold')
+    self._waitForDoubleRelease = Timer(
+      self, WaitForDoubleReleaseLimit, 'Wait for Double Release')
+    self._waitForDoubleHold = Timer(
+      self, WaitForDoubleHoldLimit, 'Wait for Double Hold')
+    self._waitForTripleClick = Timer(
+      self, WaitForTripleClickLimit, 'Wait for Triple Click')
+    self._mouseMove = Timer(self, 1000)
     label = self.maybeType(str, *args)
     self.currentText = label
     self._waitForDoubleClick.timeout.connect(self.emitSingleClick)
@@ -66,6 +63,7 @@ class AbstractButtonTimer(AbstractWidget):
     self._waitForDoubleHold.timeout.connect(self.emitDoublePressHold)
 
     self.getActiveTimer()
+    self.__ready__ = True
 
   def emitSinglePressHold(self, ) -> None:
     """Emits the single press-hold"""
@@ -101,8 +99,6 @@ class AbstractButtonTimer(AbstractWidget):
       self._waitForSingleHold,
       self._waitForDoubleRelease,
       self._waitForDoubleHold,
-      self._waitForTripleClick,
-      self._waitForTripleRelease,
     ]
 
   def resetTimers(self) -> bool:
@@ -120,3 +116,7 @@ class AbstractButtonTimer(AbstractWidget):
       raise RecursionError
     self._waitForSingleClick.start()
     return self.getActiveTimer()
+
+  def paintEvent(self, event: QPaintEvent) -> None:
+    """Adds state dependent fill to the inner rectangle."""
+    TextWidget.paintEvent(self, event)

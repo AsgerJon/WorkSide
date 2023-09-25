@@ -1,12 +1,12 @@
 """WorkSide - Widgets - TextWidgetAttributes
 Attribute class for the TextWidget class"""
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
 from typing import Never
 
-from PySide6.QtGui import QFont
+from PySide6.QtGui import QFont, QPaintEvent
 
 from workside.settings import Color, Black, MixCase, Normal, FontCase
 
@@ -276,6 +276,7 @@ class TextWidgetAttributes(AbstractWidget, ):
   # | _________________________________________________________________ | #
   def __init__(self, *args, **kwargs) -> None:
     AbstractWidget.__init__(self, *args, **kwargs)
+    self.setMouseTracking(True)
     self.__current_text__ = 'Hello World'
     self.__font_family__ = 'Modern No. 20'
     self.__font_size__ = 12
@@ -286,3 +287,7 @@ class TextWidgetAttributes(AbstractWidget, ):
     self.__font_color__ = Black
     self.__line_length__ = 60
     self.__text_align__ = 'left'
+
+  def paintEvent(self, event: QPaintEvent) -> None:
+    """Adds state dependent fill to the inner rectangle."""
+    AbstractWidget.paintEvent(self, event)

@@ -1,20 +1,18 @@
 """WorkSide - Widgets - TextWidget
 Base class for text showing widgets"""
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
-from PySide6.QtCore import QMargins
-from PySide6.QtGui import QPaintEvent, QPainter, QBrush, QColor
+from PySide6.QtGui import QPaintEvent, QColor
 from PySide6.QtWidgets import QSizePolicy
 from icecream import ic
+from worktoy.settings import AlignCenter
 
-from workside.painters import (PrintTextWidget, PaintRect,
-                               OutlineBackground, \
-  FillBackground)
-from workside.settings import Fill, getBaseBrush, getBasePen, Black
+from workside.painters import PrintTextWidget, OutlineBackground
+from workside.painters import FillBackground
+from workside.settings import getBaseBrush, getBasePen, Black
 from workside.widgets import TextWidgetVirtuals, AbstractWidget
-from worktoy.settings import AlignCenter, AlignLeft, AlignVCenter, AlignTop
 
 ic.configureOutput(includeContext=True)
 
@@ -39,6 +37,7 @@ class TextWidget(TextWidgetVirtuals, ):
 
   def __init__(self, *args, **kwargs) -> None:
     TextWidgetVirtuals.__init__(self, *args, **kwargs)
+    self.setMouseTracking(True)
     self.setSizePolicy(QSizePolicy.Policy.Maximum,
                        QSizePolicy.Policy.Maximum, )
     self.alignment = AlignCenter
@@ -49,3 +48,5 @@ class TextWidget(TextWidgetVirtuals, ):
     FillBackground(self, brush)
     OutlineBackground(self, getBasePen(Black, 1))
     PrintTextWidget(self)
+
+    TextWidgetVirtuals.paintEvent(self, event)

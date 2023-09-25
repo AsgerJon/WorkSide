@@ -1,16 +1,21 @@
 """WorkToy - Core - PrintRectText
 Code writing assistant"""
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
 from typing import Any
+from typing import TYPE_CHECKING
 
 from PySide6.QtCore import QRect
+from worktoy.settings import AlignCenter
 
 from workside.painters import AbstractPainter
-from workside.widgets import AbstractWidget
-from worktoy.settings import AlignCenter
+
+if TYPE_CHECKING:
+  from workside.widgets import AbstractWidget
+else:
+  from PySide6.QtWidgets import QWidget as AbstractWidget
 
 
 class PrintRectText(AbstractPainter):

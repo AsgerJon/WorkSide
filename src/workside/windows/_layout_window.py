@@ -1,16 +1,15 @@
 """WorkSide - Windows - LayoutWindow
 This part of the application window chain is responsible for layout of
 widgets. """
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
-from PySide6.QtWidgets import QGridLayout, QWidget
+from PySide6.QtWidgets import QGridLayout, QWidget, QPushButton
 from icecream import ic
 
-from workside.widgets import VerticalSpacer, HorizontalSpacer, AbstractButton
+from workside.widgets import VerticalSpacer, HorizontalSpacer, TextWidget
 from workside.windows import BaseWindow
-from worktoy.settings import AlignCenter
 
 ic.configureOutput(includeContext=True)
 
@@ -23,26 +22,20 @@ class LayoutWindow(BaseWindow):
     BaseWindow.__init__(self, *args, **kwargs)
     self._baseLayout = QGridLayout()
     self._baseWidget = QWidget()
-    self._button = AbstractButton('CUNT')
+    self._kill = QPushButton('yourself')
+    self._cunt = TextWidget()
     self.topHSpacer = HorizontalSpacer()
     self.bottomHSpacer = HorizontalSpacer()
     self.leftVSpacer = VerticalSpacer()
     self.rightVSpacer = VerticalSpacer()
-    self._button.singleClick.connect(self.debugFunc01)
-    self._button.doubleClick.connect(self.debugFunc02)
-    self._button.tripleClick.connect(self.debugFunc03)
-    self._button.singlePressHold.connect(self.debugFunc04)
-    self._button.doublePressHold.connect(self.debugFunc05)
-    # self._button.leftSingleClick.connect(self.debugFunc02)
 
   def setupWidgets(self) -> None:
     """Sets up the widgets. Add widget is row and then column."""
-    self._getBaseLayout().addWidget(self._button, 1, 1, 1, 1)
-    self._getBaseLayout().addWidget(self.topHSpacer, 0, 1, )
-    self._getBaseLayout().addWidget(self.bottomHSpacer, 2, 1, )
-    self._getBaseLayout().addWidget(self.leftVSpacer, 1, 0, )
-    self._getBaseLayout().addWidget(self.rightVSpacer, 1, 2, )
-    self._getBaseWidget().setLayout(self._getBaseLayout())
+    self._baseLayout.addWidget(self.topHSpacer, 0, 1, 1, 1)
+    self._baseLayout.addWidget(self.bottomHSpacer, 2, 1, 1, 1)
+    self._baseLayout.addWidget(self.leftVSpacer, 1, 0, 1, 1)
+    self._baseLayout.addWidget(self.rightVSpacer, 1, 2, 1, 1)
+    self._baseWidget.setLayout(self._baseLayout)
     self.setCentralWidget(self._baseWidget)
 
   def _getBaseWidget(self, **kwargs) -> QWidget:

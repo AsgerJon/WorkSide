@@ -1,20 +1,18 @@
 """WorkToy - Core - ClockWidget 
 Code writing assistant"""
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
 from time import ctime
 
 from PySide6.QtCore import QTimer
-from PySide6.QtGui import QPaintEvent, QColor
+from PySide6.QtGui import QPaintEvent
+from icecream import ic
+from worktoy.settings import AlignBottom, AlignHCenter
 
-from workside.painters import OutlineBackground
-from workside.settings import Coarse, getBaseBrush, getBasePen, \
-  Black, Pink
+from workside.settings import Coarse, Precise
 from workside.widgets import TextWidget
-from worktoy.settings import AlignLeft, AlignVCenter, AlignCenter, \
-  AlignBottom, AlignHCenter
 
 
 class ClockWidget(TextWidget):
@@ -22,6 +20,7 @@ class ClockWidget(TextWidget):
 
   def __init__(self, *args, **kwargs) -> None:
     TextWidget.__init__(self, *args, **kwargs)
+    self.setMouseTracking(True)
     self.fontFamily = 'Courier'
     self.fontSize = 9
     self.paddingLeft = 3
@@ -36,8 +35,9 @@ class ClockWidget(TextWidget):
   def createClockTimer(self) -> None:
     """Creator function for clock timer"""
     self._clockTimer = QTimer()
-    self._clockTimer.setTimerType(Coarse)
+    self._clockTimer.setTimerType(Precise)
     self._clockTimer.setInterval(250)
+    # self._clockTimer.setSingleShot(True)
     self._clockTimer.timeout.connect(self.refresh)
 
   def getClockTimer(self, **kwargs) -> QTimer:
@@ -61,4 +61,3 @@ class ClockWidget(TextWidget):
   def paintEvent(self, event: QPaintEvent) -> None:
     """LMAO"""
     TextWidget.paintEvent(self, event)
-    self.getClockTimer().start()

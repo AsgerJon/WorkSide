@@ -8,59 +8,40 @@ from abc import abstractmethod
 from typing import cast
 
 from PySide6.QtCore import QEvent, QPointF, QRectF
-from PySide6.QtGui import QMouseEvent
+from PySide6.QtGui import QMouseEvent, QPaintEvent
 from PySide6.QtWidgets import QWidget
 from icecream import ic
 from worktoy.descriptors import Attribute
 
+from workside.painters import HoverPainter
 from workside.settings import NoBtn
 from workside.settings import MouseRelease, MouseMove
 from workside.settings import SinglePress, DoublePress, Leave, Enter
-from workside.widgets import AbstractButtonTimer
+from workside.widgets import AbstractMouseRegion
 
 ic.configureOutput(includeContext=True)
 
 
-class AbstractButton(AbstractButtonTimer):
+class AbstractButton(AbstractMouseRegion):
   """Abstract baseclass for mouse sensitive widgets"""
 
-  underMouse = Attribute(False)
-  mousePoint = Attribute(QPointF(0, 0))
-  mouseX = Attribute(0.)
-  mouseY = Attribute(0.)
-  mouseVX = Attribute(0.)
-  mouseVY = Attribute(0.)
-  mouseAX = Attribute(0.)
-  mouseAY = Attribute(0.)
-  mouseState = Attribute(NoBtn)
-  mouseRegion = Attribute(QRectF())
-  mouseLeft = Attribute()
-  mouseTop = Attribute()
-  mouseRight = Attribute()
-  mouseBottom = Attribute()
-
   def __init__(self, *args, **kwargs) -> None:
-    AbstractButtonTimer.__init__(self, *args, **kwargs)
+    AbstractMouseRegion.__init__(self, *args, **kwargs)
     self.setMouseTracking(True)
-
-  @mouseRegion.GET
-  @abstractmethod
-  def getMouseArea(self, ) -> str:
-    """Getter-function for the mouse area. Subclass must implement this
-    method to define which part of the widget are to be considered by the
-    mouse events."""
+    ic(self.__ready__)
 
   def event(self, widgetEvent: QEvent) -> bool:
     """Implementation of event handling"""
-    handleResults = [
-      self.handleMousePress(widgetEvent),
-      self.handleMouseRelease(widgetEvent),
-      self.handleEnter(widgetEvent),
-      self.handleLeave(widgetEvent),
-      self.handleMove(widgetEvent),
-    ]
-    if any(handleResults):
-      return True
+    if self.__ready__:
+      handleResults = [
+        self.handleMousePress(widgetEvent),
+        self.handleMouseRelease(widgetEvent),
+        self.handleEnter(widgetEvent),
+        self.handleLeave(widgetEvent),
+        self.handleMove(widgetEvent),
+      ]
+      if any(handleResults):
+        return True
     return QWidget.event(self, widgetEvent)
 
   def handleMousePress(self, event: QEvent) -> bool:
@@ -110,68 +91,39 @@ class AbstractButton(AbstractButtonTimer):
       self.resetTimers()
       self._waitForTripleClick.start()
       return True
-    if self._waitForTripleRelease:
-      self.resetTimers()
-      self._waitForTripleRelease.start()
-      return True
     return True
 
-  def handleEnter(self, event: QEvent) -> bool:
+  def handleEnter(self, mousePoint: QPointF = None) -> bool:
     """Handles mouse enter events"""
-    if not event.type() in [Enter]:
-      return False
-    self.resetTimers()
-    self.mouseX, self.mouseY = event.position().x(), event.position().y()
-    self.mouseVX, self.mouseVY, self.mouseAX, self.mouseAY = 0, 0, 0, 0
     self.underMouse = True
+    self.resetTimers()
     self.update()
     return True
 
-  def handleLeave(self, event: QEvent) -> bool:
+  def handleLeave(self, mousePoint: QPointF = None) -> bool:
     """Handles mouse enter events"""
-    if not event.type() in [Leave]:
-      return False
     self.underMouse = False
-    self.activeButton = NoBtn
     if self._waitForDoubleClick:
-      print('leave emit single')
       self.resetTimers()
       self.emitSingleClick()
     if self._waitForTripleClick:
-      print('leave emit double')
       self.resetTimers()
       self.emitDoubleClick()
     self.update()
     return True
-
-  def __contains__(self, mousePoint: QPointF) -> bool:
-    """Instances of QPointF that are inside the mouse area rectangle are
-    considered to be 'in' this instance."""
 
   def handleMove(self, event: QEvent) -> bool:
     """Handles mouse move events"""
     if not event.type() in [MouseMove]:
       return False
     event = cast(QMouseEvent, event)
-    mousePosition = event.position()
-    if mousePosition in self and isinstance(mousePosition, QPointF):
-      self.updateCursorPosition(mousePosition)
-
-  def updateCursorPosition(self, mousePoint: QPointF) -> None:
-    """This method updates cursor location information."""
-    px, py = self.mouseX, self.mouseY
-    vx, vy = self.mouseVX, self.mouseVY
-    p = mousePoint
-    self.mouseX, self.mouseY, self.mousePoint = p.x(), p.y(), p
-    dt = 2 ** 32 - 1
-    if self._mouseMove:
-      dt = max(1, 1000 - self._mouseMove.remainingTime())
-    self.mouseVX = (self.mouseX - px) / dt
-    self.mouseVY = (self.mouseY - py) / dt
-    self.mouseAX = (self.mouseVX - vx) / dt
-    self.mouseAY = (self.mouseVY - vy) / dt
-    self._mouseMove.start()
-    self.update()
+    mousePoint = event.position()
+    if self.underMouse and mousePoint not in self:
+      self.handleLeave()
+    if not self.underMouse and mousePoint in self:
+      self.handleEnter()
+    if mousePoint in self:
+      self.updateCursorPosition(mousePoint)
 
   def __str__(self) -> str:
     return '%s: %s' % (self.__class__.__qualname__, self.currentText)
@@ -179,3 +131,10 @@ class AbstractButton(AbstractButtonTimer):
   def __repr__(self, ) -> str:
     """Code Representation"""
     return '%s(%s)' % (self.__class__.__qualname__, self.currentText)
+
+  def paintEvent(self, event: QPaintEvent) -> None:
+    """Adds state dependent fill to the inner rectangle."""
+    ic()
+    if self.underMouse:
+      HoverPainter(self)
+    AbstractMouseRegion.paintEvent(self, event)

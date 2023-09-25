@@ -1,16 +1,20 @@
 """WorkSide - Painters - FillBackground
 Invoking this painter fills the background on the paint device calling."""
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from PySide6.QtCore import QMargins
 from icecream import ic
 
 from workside.painters import AbstractPainter
 from workside.settings import blankPen, NoFill, Lime
-from workside.widgets import AbstractWidget
 
+if TYPE_CHECKING:
+  from workside.widgets import AbstractWidget
+else:
+  from PySide6.QtWidgets import QWidget as AbstractWidget
 ic.configureOutput(includeContext=True)
 
 
