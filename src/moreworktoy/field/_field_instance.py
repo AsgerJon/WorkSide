@@ -1,7 +1,7 @@
 """WorkToy - Core - FieldInstance
 Code writing assistant."""
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
 from typing import Never, Any
@@ -9,7 +9,7 @@ from typing import Never, Any
 from icecream import ic
 
 from worktoy.descriptors import Attribute
-from worktoy.worktoyclass import AbstractTemplate
+from moreworktoy.texttools import AbstractTemplate
 
 ic.configureOutput(includeContext=True)
 
@@ -26,12 +26,78 @@ class FieldInstance(AbstractTemplate):
   allowGet = Attribute(True)
   allowSet = Attribute(True)
   allowDel = Attribute(False)
+  createCode = Attribute()
   getCode = Attribute()
-  setCode = Attribute('cunt')
-  delCode = Attribute('cunt')
-  createCode = Attribute('cunt')
-  clsCode = Attribute('cunt')
-  initCode = Attribute('cunt')
+  setCode = Attribute()
+  delCode = Attribute()
+  clsCode = Attribute()
+  initCode = Attribute()
+
+  @createCode.GET
+  def getCreateCode(self) -> list[str]:
+    """Getter-function for creator code"""
+    out = []
+    for line in self.baseCreate():
+      out.append(self.render(line))
+    return out
+
+  @clsCode.GET
+  def getClsCode(self) -> list[str]:
+    """Getter-function for class body contribution"""
+    out = []
+    for line in self.baseBody():
+      out.append(self.render(line))
+    return out
+
+  @initCode.GET
+  def getInitCode(self) -> list[str]:
+    """Getter-function for initializer contribution"""
+    out = []
+    for line in self.baseInit():
+      out.append(self.render(line))
+    return out
+
+  @allowGet.GET
+  def getAllowGet(self) -> bool:
+    """Getter-function for allow getter flag"""
+    return True if self.permLevel > 0 else False
+
+  @allowSet.GET
+  def getAllowSet(self) -> bool:
+    """Getter-function for allow setter flag"""
+    return True if self.permLevel > 1 else False
+
+  @allowDel.GET
+  def getAllowDel(self) -> bool:
+    """Getter-function for allow deleter flag"""
+    return True if self.permLevel > 2 else False
+
+  @getCode.GET
+  def getGetCode(self) -> list[str]:
+    """Getter-function for the code creating the getter function"""
+    out = []
+    lines = self.legalGet() if self.allowGet else self.illegalGet()
+    for line in lines:
+      out.append(self.render(line))
+    return out
+
+  @setCode.GET
+  def getSetCode(self) -> list[str]:
+    """Getter-function for the code creating the setter function"""
+    out = []
+    lines = self.legalSet() if self.allowSet else self.illegalSet()
+    for line in lines:
+      out.append(self.render(line))
+    return out
+
+  @delCode.GET
+  def getDelCode(self) -> list[str]:
+    """Getter-function for the code creating the deleter function"""
+    out = []
+    lines = self.legalDel() if self.allowDel else self.illegalDel()
+    for line in lines:
+      out.append(self.render(line))
+    return out
 
   def __init__(self, name: str, defVal: Any, permArg: int,
                *args, **kwargs) -> None:
@@ -64,7 +130,7 @@ class FieldInstance(AbstractTemplate):
       '<tab=2>if self.<pvtName> is None:',
       '<tab=3>if kwargs.get(\'_recursion\', False):',
       '<tab=4>from worktoy.waitaminute import RecursiveCreateGetError',
-      '<tab=4>creator = self._create<capName>(self, **kwargs)',
+      '<tab=4>creator = self._create<capName>',
       '<tab=4>argType = <valueType>',
       '<tab=4>argName = \'<pvtName>\'',
       '<tab=4>raise RecursiveCreateGetError(creator, argType, argName)',
@@ -79,7 +145,7 @@ class FieldInstance(AbstractTemplate):
     return ['<tab=1>@<fieldName>.SET',
             '<tab=1>def set<capName>(self, newValue: <valueType>) -> None:',
             '<tab=2>\"\"\"Setter-function for <fieldName>\"\"\"',
-            '<tab=2>self.<pvtName> = newValue', ]
+            '<tab=2>setattr(<valueType>, <pvtNameQuoted>, newValue)', ]
 
   @classmethod
   def legalDel(cls) -> Never:
@@ -92,7 +158,7 @@ class FieldInstance(AbstractTemplate):
     raise NotImplementedError
 
   @classmethod
-  def illegalSetter(cls) -> list[str]:
+  def illegalSet(cls) -> list[str]:
     """Getter function for the illegal setter code"""
     return [
       '<tab=1>@<fieldName>.SET',
@@ -119,29 +185,32 @@ class FieldInstance(AbstractTemplate):
       '<tab=2>raise ProtectedAttributeError(attName, insName, clsName)',
     ]
 
-  allowGet.GET(lambda s: s.permLevel > 0)
-  allowSet.GET(lambda s: s.permLevel > 1)
-  allowDel.GET(lambda s: s.permLevel > 2)
-  getCode.GET(lambda s: ''.join([s.render(i) for i in s.baseGet()]))
-  setCode.GET(lambda s: ''.join([s.render(i) for i in s.baseSet()]))
-  delCode.GET(lambda s: ''.join([s.render(i) for i in s.baseDel()]))
-  createCode.GET(lambda s: ''.join([s.render(i) for i in s.baseCreate()]))
-  initCode.GET(lambda s: ''.join([s.render(i) for i in s.baseInit()]))
+  def legalCreate(self) -> list[str]:
+    """Getter-function for the field value creator function"""
+    return [
+      '<tab=1>@<fieldName>.CREATE',
+      '<tab=1>def _create<capName>(self, ) -> None:',
+      '<tab=2>\"\"\"Creator-function for <fieldName>\"\"\"',
+      '<tab=2>newInstance = <valueType>()',
+      '<tab=2>setattr(<valueType>, <pvtNameQuoted>, newInstance)',
+    ]
 
   def getterCodes(self) -> str:
     """The getter codes"""
     out = []
     for segment in self.baseGet():
       out.append(segment)
+    return '\n'.join(out)
 
   def getTags(self) -> dict[str, str]:
     """Getter-function for the dictionary mapping tags to replacements"""
     return {
-      '<valueType>': self.valueType.__qualname__,
-      '<fieldName>': self.name,
-      '<pvtName>'  : self.pvtName,
-      '<capName>'  : self.capName,
-      '<defVal>'   : self.defVal,
+      '<valueType>'    : self.valueType.__qualname__,
+      '<fieldName>'    : self.name,
+      '<pvtName>'      : self.pvtName,
+      '<pvtNameQuoted>': '\'%s\'' % (self.pvtName),
+      '<capName>'      : self.capName,
+      '<defVal>'       : self.defVal,
     }
 
   def baseInit(self) -> list[str]:
@@ -158,8 +227,12 @@ class FieldInstance(AbstractTemplate):
 
   def baseSet(self) -> list[str]:
     """Getter-function for setter code"""
-    return self.legalSet() if self.allowSet else self.illegalSetter()
+    return self.legalSet() if self.allowSet else self.illegalSet()
 
   def baseDel(self) -> list[str]:
     """Getter-function for the deleter code"""
     return self.legalDel() if self.allowDel else self.illegalDel()
+
+  def baseCreate(self, ) -> list[str]:
+    """Getter-function for the creator code"""
+    return self.legalCreate()

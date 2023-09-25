@@ -8,11 +8,16 @@ import sys
 import time
 from typing import NoReturn, Never, Any
 
+from PySide6.QtCore import QRect, QRectF, QPointF
 from PySide6.QtWidgets import QApplication
 from icecream import ic
 from pyperclip import copy
 from worktoy.descriptors import AttributeClass
+from worktoy.worktoyclass import WorkToyClass
 
+from moreworktoy import FieldClass
+from workside.settings import Mouse, NoBtn
+from workside.widgets import AbstractWidget
 from workside.windows import MainWindow
 
 
@@ -31,20 +36,31 @@ def tester00() -> NoReturn:
 
 def tester01() -> None:
   """LMAO"""
-  cunt = AttributeClass()
-  cunt.setCls('AbstractMouseArea')
-  cunt.setParent('AbstractWidget')
-  cunt.setDoc('Defines the area of the widget considered by the mouse '
-              'events.')
+  fuck = WorkToyClass()
 
-  cunt.addAttribute(*cunt.stringList('mouseLeft, 0, float, '))
-  cunt.addAttribute(*cunt.stringList('mouseTop, 0, float'))
-  cunt.addAttribute(*cunt.stringList('mouseRight, 0, float'))
-  cunt.addAttribute(*cunt.stringList('mouseBottom, 0, float'))
-  cunt.addAttribute(*cunt.stringList('mouseRegion, QRectF(), QRectF'))
-  cunt.addAttribute(*cunt.stringList('mouseState, NoBtn, Mouse'))
+  documentation = fuck.stringList("""Defines the area of the widget 
+  considered by the mouse""")
+  cunt = FieldClass('AbstractMouseRegion', documentation,
+                    parent=AbstractWidget)
 
-  copy(cunt.buildCode())
+  cunt.addField('mousePoint', 'QPointF()', 2)
+  cunt.addField('underMouse', 'False', 2)
+
+  cunt.addField('mousePX', 0, 2)
+  cunt.addField('mousePY', 0, 2)
+  cunt.addField('mouseVX', 0, 2)
+  cunt.addField('mouseVY', 0, 2)
+  cunt.addField('mouseAX', 0, 2)
+  cunt.addField('mouseAY', 0, 2)
+
+  cunt.addField('mouseState', 'NoBtn', 2)
+  cunt.addField('mouseRegion', 'QRectF()', 2)
+  cunt.addField('mouseLeft', 0, 2)
+  cunt.addField('mouseTop', 0, 2)
+  cunt.addField('mouseRight', 0, 2)
+  cunt.addField('mouseBottom', 0, 2)
+
+  copy(cunt.buildClass())
 
 
 def tester02() -> None:

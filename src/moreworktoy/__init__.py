@@ -4,5 +4,8 @@ Additions to WorkToy"""
 #  MIT Licence
 from __future__ import annotations
 
-from moreworktoy.field import Field, FieldInstance, FieldClass
+from moreworktoy.field import Field
+from moreworktoy.field import FieldInstance
+from moreworktoy.field import FieldClass
 
+from moreworktoy.texttools import AbstractTemplate

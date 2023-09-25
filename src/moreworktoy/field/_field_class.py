@@ -1,15 +1,21 @@
 """WorkToy - Core - ParseCode
 Code writing assistant"""
-#  MIT Licence
 #  Copyright (c) 2023 Asger Jon Vistisen
+#  MIT Licence
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from icecream import ic
+from worktoy.descriptors import Attribute
 
-from worktoy.descriptors import Attribute, FieldInstance
 from worktoy.settings import tabIndent
 from worktoy.texttools import Header
-from worktoy.worktoyclass import AbstractTemplate
+
+from moreworktoy.field import FieldInstanceHeader, FieldInstanceFooter
+from moreworktoy.texttools import AbstractTemplate
+
+if TYPE_CHECKING:
+  from moreworktoy import FieldInstance
 
 ic.configureOutput(includeContext=True)
 
@@ -46,8 +52,8 @@ class FieldClass(AbstractTemplate):
           mclsArg = arg  # Indicates arg is a metaclass or type.
         elif parentArg is None:
           parentArg = arg  # Indicates arg is a class, but not a metaclass.
-    self.mcls = self.maybe(mclsKwarg, mclsArg, mclsDefault)
-    self.parent = self.maybe(parentKwarg, parentArg, parentDefault)
+    self.metaClass = self.maybe(mclsKwarg, mclsArg, mclsDefault)
+    self.classParent = self.maybe(parentKwarg, parentArg, parentDefault)
 
   def getTabTags(self) -> dict[str, str]:
     """Getter-function for tab tags"""
@@ -65,28 +71,47 @@ class FieldClass(AbstractTemplate):
 
   def addField(self, *args, **kwargs) -> None:
     """Adds a 'FieldInstance' or creates a field instance. """
-    fieldArg = self.maybeType(FieldInstance, *args)
-    if isinstance(fieldArg, FieldInstance):
-      return self.addedFields.append(fieldArg)
+    fieldArg = None
+    for arg in args:
+      if arg.__class__.__qualname__ == 'FieldInstance' and fieldArg is None:
+        return self.addedFields.append(arg)
     return self.addedFields.append(self.createField(*args, **kwargs))
 
   def createField(self, *args, **kwargs) -> FieldInstance:
     """Creates and returns a field instance"""
+    from moreworktoy.field import FieldInstance
     return FieldInstance(*args, **kwargs)
 
   def clsHead(self) -> list[str]:
     """Code lines for the class header"""
+    if self.metaClass is type and self.classParent is object:
+      return [
+        'class <clsName>:',
+        '<tab=1>\"\"\"<doc>\"\"\"',
+      ]
+    if self.metaClass is type:
+      return [
+        'class <clsName>(%s):' % self.classParent.__qualname__,
+        '<tab=1>\"\"\"<doc>\"\"\"',
+      ]
+    if self.classParent is object:
+      return [
+        'class <clsName>(metaclass=%s):' % self.metaClass.__qualname__,
+        '<tab=1>\"\"\"<doc>\"\"\"',
+      ]
+    parent, mcls = self.classParent.__qualname__, self.metaClass.__qualname__
     return [
-      'class <clsName>(<parent>, metaclass=<mcls>):',
+      'class <clsName>(%s, metaclass=%s):' % (parent, mcls),
       '<tab=1>\"\"\"<doc>\"\"\"',
     ]
 
   def baseInit(self) -> list[str]:
     """Getter-function for code creating the '__init__' method."""
-    return [
-      '<tab=1>def __init__(self, *args, **kwargs) -> None:',
-      '<tab=2><parent>.__init__(self, *args, **kwargs)',
-    ]
+    out = ['<tab=1>def __init__(self, *args, **kwargs) -> None:', ]
+    if self.classParent is not object:
+      line = '<tab=2>%s.__init__(self, *args, **kwargs)'
+      out.append(line % self.classParent.__qualname__)
+    return out
 
   def buildClassHead(self) -> list[str]:
     """Returns the class header with the current values."""
@@ -104,10 +129,11 @@ class FieldClass(AbstractTemplate):
     """Builds the accessor for each attribute"""
     outLines = []
     for attr in self.addedFields:
-      outLines.append(str(Header(attr.name)))
-      for acc in [attr.getCode, attr.setCode, attr.delCode]:
+      outLines.append(str(FieldInstanceHeader(attr.name)))
+      for acc in [attr.getCode, attr.setCode, attr.delCode, attr.createCode]:
         for line in acc:
           outLines.append(self.render(line))
+      outLines.append(str(FieldInstanceFooter(attr.name)))
     return outLines
 
   def buildInit(self) -> list[str]:
@@ -127,16 +153,12 @@ class FieldClass(AbstractTemplate):
     out = []
     for line in self.buildClassHead():
       out.append(line)
-      out.append('\n')
     for line in self.buildAttributes():
       out.append(line)
-      out.append('\n')
     for line in self.buildAccessors():
       out.append(line)
-      out.append('\n')
     for line in self.buildInit():
       out.append(line)
-      out.append('\n')
     for line in self.buildInitDefaultValues():
       out.append(line)
     return '\n'.join(out)
