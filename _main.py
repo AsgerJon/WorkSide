@@ -11,8 +11,7 @@ from typing import NoReturn, Never, Any
 from PySide6.QtWidgets import QApplication
 from icecream import ic
 
-from workside.styles._font_family import FontFamily
-from workside.window import MainWindow
+from workside.windows import MainWindow
 
 
 def Remainder(val: Any) -> int:
@@ -30,14 +29,6 @@ def tester00() -> NoReturn:
 
 def tester01() -> None:
   """LMAO"""
-
-  fam = FontFamily.Modern
-  print(type(fam))
-  print(fam.__class__)
-  ic(isinstance(fam, FontFamily))
-
-  for item in FontFamily:
-    print(item)
 
 
 def tester02() -> None:

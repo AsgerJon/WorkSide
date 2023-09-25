@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Black">
-    <option name="sdkUUID" value="5165a64e-ec80-4a33-8b62-08e5a6d6a13b" />
+    <option name="sdkUUID" value="5dfa6892-0386-4693-a6a6-4b4b604a989d" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="devtoy" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="devside" project-jdk-type="Python SDK" />
   <component name="PythonCompatibilityInspectionAdvertiser">
     <option name="version" value="3" />
   </component>
