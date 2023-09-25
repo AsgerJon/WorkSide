@@ -33,7 +33,7 @@ class AbstractButton(AbstractButtonTimer):
   mouseAX = Attribute(0.)
   mouseAY = Attribute(0.)
   mouseState = Attribute(NoBtn)
-  mouseArea = Attribute(QRectF())
+  mouseRegion = Attribute(QRectF())
   mouseLeft = Attribute()
   mouseTop = Attribute()
   mouseRight = Attribute()
@@ -43,7 +43,7 @@ class AbstractButton(AbstractButtonTimer):
     AbstractButtonTimer.__init__(self, *args, **kwargs)
     self.setMouseTracking(True)
 
-  @mouseArea.GET
+  @mouseRegion.GET
   @abstractmethod
   def getMouseArea(self, ) -> str:
     """Getter-function for the mouse area. Subclass must implement this

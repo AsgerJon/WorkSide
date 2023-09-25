@@ -10,6 +10,8 @@ from typing import NoReturn, Never, Any
 
 from PySide6.QtWidgets import QApplication
 from icecream import ic
+from pyperclip import copy
+from worktoy.descriptors import AttributeClass
 
 from workside.windows import MainWindow
 
@@ -29,6 +31,20 @@ def tester00() -> NoReturn:
 
 def tester01() -> None:
   """LMAO"""
+  cunt = AttributeClass()
+  cunt.setCls('AbstractMouseArea')
+  cunt.setParent('AbstractWidget')
+  cunt.setDoc('Defines the area of the widget considered by the mouse '
+              'events.')
+
+  cunt.addAttribute(*cunt.stringList('mouseLeft, 0, float, '))
+  cunt.addAttribute(*cunt.stringList('mouseTop, 0, float'))
+  cunt.addAttribute(*cunt.stringList('mouseRight, 0, float'))
+  cunt.addAttribute(*cunt.stringList('mouseBottom, 0, float'))
+  cunt.addAttribute(*cunt.stringList('mouseRegion, QRectF(), QRectF'))
+  cunt.addAttribute(*cunt.stringList('mouseState, NoBtn, Mouse'))
+
+  copy(cunt.buildCode())
 
 
 def tester02() -> None:
@@ -43,5 +59,5 @@ def tester02() -> None:
 if __name__ == '__main__':
   print(77 * '_')
   print(time.ctime())
-  tester02()
+  tester01()
   print(77 * '¨')
