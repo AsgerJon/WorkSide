@@ -5,6 +5,7 @@ Collection of specialized subclasses of QPainter"""
 from __future__ import annotations
 
 from ._mouse_paint_settings import *
+from ._text_printer import TextPrinter
 from ._abstract_painter_attributes import AbstractPainterProperties
 from ._abstract_painter import AbstractPainter
 from ._fill_background import FillBackground

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import workside.painters as painters
 import workside.widgets as widgets
+import workside.quickwidgets as quickwidgets
 import workside.specialwidgets as specialwidgets
 import workside.windows as windows
 import workside.settings as settings
